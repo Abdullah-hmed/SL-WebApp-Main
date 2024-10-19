@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Webcam Capture</title>
+</head>
+<style>
+    .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+    #video {
+        transform: scaleX(-1);
+    }
+</style>
+<body>
+    <div class="container">
+        <h1>WebSocket Webcam Capture</h1>
+        <video id="video" width="600" height="440" autoplay></video>
+        <canvas id="canvas" width="600" height="440" style="display:none;"></canvas>
+        <div id="prediction" style="font-size: 30px; margin-top: 20px;"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const predictionDiv = document.getElementById('prediction');
+
+        // Establish WebSocket connection using Socket.IO
+        const socket = io();
+
+        let isProcessing = false;
+
+        // Access webcam
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+                // Start the cycle once video is ready
+                video.onloadedmetadata = () => {
+                    sendFrame();
+                };
+            })
+            .catch(err => {
+                console.error("Error accessing webcam: ", err);
+            });
+
+        function sendFrame() {
+            if (isProcessing) return;
+
+            isProcessing = true;
+            context.drawImage(video, 0, 0, 640, 480);
+            const imageData = canvas.toDataURL('image/jpeg', 0.8);
+
+            // Send image data through WebSocket
+            socket.send(imageData);
+        }
+
+        // Handle the server's response
+        socket.on('prediction', (data) => {
+            const className = data.class;
+            const classConfidence = data.confidence;
+            let color = classConfidence > 0.5 ? 'green' : 'red';
+            
+
+            predictionDiv.innerHTML = `Prediction: <span style="color:green">${className}</span>, Confidence: <span style="color:${color}">${classConfidence.toFixed(2)*100}%</span>`;
+            
+            isProcessing = false;
+            // Send the next frame immediately after receiving a prediction
+            sendFrame();
+        });
+    </script>
+</body>
+</html>
