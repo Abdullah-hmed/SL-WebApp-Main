@@ -4,6 +4,7 @@ const context = canvas.getContext('2d');
 const predictionDiv = document.getElementById('prediction');
 const processedImage = document.getElementById('processedImage');
 const aspect = document.getElementById('aspectRatio');
+FRAME_DELAY = 100;
 
 // Establish WebSocket connection using Socket.IO
 const socket = io();
@@ -76,11 +77,13 @@ socket.on('prediction', (data) => {
     let color = classConfidence > 0.5 ? 'green' : 'red';
     
 
-    predictionDiv.innerHTML = `Prediction: <span style="color:green">${className}</span>, Confidence: <span style="color:${color}">${classConfidence.toFixed(2)*100}%</span>`;
+    predictionDiv.innerHTML = `Prediction: <span style="color:green">${className}</span>, Confidence: <span style="color:${color}">${(classConfidence*100).toFixed(2)}%</span>`;
     if (processedImageData) {
         processedImage.src = imageUrl;
     }
     isProcessing = false;
     // Send the next frame immediately after receiving a prediction
-    sendFrame();
+    // sendFrame();
+
+    setTimeout(sendFrame, FRAME_DELAY);
 });

@@ -35,7 +35,7 @@ def process_image(data):
     # Load the image using PIL
     image = Image.open(BytesIO(image_data))
     
-    image.save(f's/image_{datetime.datetime.now()}.jpg')
+    # image.save(f's/image_{datetime.datetime.now()}.jpg')
     
     # Process the image
     pred = frameInference(image, model, device)
