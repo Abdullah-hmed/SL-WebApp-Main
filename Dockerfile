@@ -1,27 +1,30 @@
-# Use the official PyTorch image with CUDA support
-FROM pytorch/pytorch:1.13.1-cuda11.6-cudnn8-runtime
+FROM python:3.9-slim
 
-# Set the working directory inside the container
-WORKDIR /app
-
-# Install system-level dependencies required by Mediapipe and OpenCV
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     libgl1-mesa-glx \
+    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy the entire project into the container
+# Set the working directory
+WORKDIR /app
+
+# Copy the entire project
 COPY . /app
 
-# Set the working directory for the Flask app
+# Set working directory to App
 WORKDIR /app/App
 
-# Upgrade pip to the latest version
+# Upgrade pip
 RUN pip install --upgrade pip
+
+# Downloading pytorch initially
+RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose Flask's default port
+# Expose the application port
 EXPOSE 3000
 
 # Set environment variables for Flask
@@ -29,5 +32,5 @@ ENV FLASK_APP=webapp.py
 ENV FLASK_RUN_HOST=0.0.0.0
 ENV FLASK_RUN_PORT=3000
 
-# Command to run the Flask app
-CMD ["flask", "run"]
+# Run the Flask application
+CMD ["python", "webapp.py"]

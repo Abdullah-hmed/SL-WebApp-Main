@@ -1,11 +1,11 @@
 Flask==3.1.0
 Flask_SocketIO==5.4.1
-matplotlib==3.7.4  # Changed to a compatible version
+matplotlib==3.7.4
 mediapipe==0.10.15
-numpy==1.24.4  # Changed to a stable version compatible with Python 3.9
-opencv_contrib_python==4.7.0.72  # Downgraded to a stable version
-opencv_python==4.7.0.72  # Matched with opencv_contrib
-Pillow==9.5.0  # Downgraded to a stable version
-scikit_learn==1.2.2  # Downgraded to a stable version
-torch==1.13.1  # Changed to a stable version without CUDA specifics
-torchvision==0.14.1  # Matched with torch version
+numpy==1.24.4
+opencv_contrib_python==4.7.0.72
+opencv_python==4.7.0.72
+Pillow==9.5.0
+scikit_learn==1.2.2
+torch==2.0.1+cu121  # CUDA 12.1 version of PyTorch
+torchvision==0.15.2+cu121  # CUDA 12.1 version of Torchvision
