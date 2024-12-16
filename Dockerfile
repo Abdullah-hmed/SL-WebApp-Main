@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.10-slim
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -9,17 +9,16 @@ RUN apt-get update && apt-get install -y \
 # Set the working directory
 WORKDIR /app
 
-# Copy the entire project
-COPY . /app
+# Copy only requirements.txt first for dependency installation caching
+COPY App/requirements.txt /app/requirements.txt
 
-# Set working directory to App
-WORKDIR /app/App
+# Upgrade pip and install Python dependencies
+RUN pip install --upgrade pip \
+    && pip install --no-cache-dir -r /app/requirements.txt \
+    && pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 
-# Upgrade pip
-RUN pip install --upgrade pip
-
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy the rest of the application code
+COPY App /app
 
 # Expose the application port
 EXPOSE 3000
