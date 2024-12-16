@@ -1,0 +1,11 @@
+Flask==3.1.0
+Flask_SocketIO==5.4.1
+matplotlib==3.10.0
+mediapipe==0.10.15
+numpy==2.2.0
+opencv_contrib_python==4.10.0.84
+opencv_python==4.10.0.84
+Pillow==11.0.0
+scikit_learn==1.6.0
+torch==2.4.1+cu121
+torchvision==0.19.1+cu121
