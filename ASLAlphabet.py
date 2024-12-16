@@ -18,6 +18,8 @@ from torchvision import transforms
 from torch import nn
 import torch.nn.functional as F
 
+
+
 def getTransforms():
     transform = transforms.Compose([
         transforms.Resize((128,128), antialias=False),
@@ -26,9 +28,21 @@ def getTransforms():
     ])
     return transform
 
-def getDevice():
-    return 'cuda' if torch.cuda.is_available() else 'cpu'
 
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+transform = getTransforms()
+class_names = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+top3_preds = torch.zeros(3, dtype=torch.long, device=device)
+top3_confidences = torch.zeros(3, device=device)
+
+mp_hands = mp.solutions.hands
+mp_drawing = mp.solutions.drawing_utils
+hands = mp_hands.Hands(
+    static_image_mode=False,  # Use tracking mode for video/continuous frames
+    max_num_hands=1,  # Limit to fewer hands if possible
+    min_detection_confidence=0.5,  # Adjust confidence threshold 
+    min_tracking_confidence=0.5  # Lower can improve tracking speed
+)
 
 class SelfASLModel(nn.Module):
     def __init__(self, input_channels: int, hidden_units: int, output_shape: int):
@@ -65,7 +79,7 @@ class SelfASLModel(nn.Module):
         x = self.classifier(x)
         return x
     
-def load_model(device, model_name="self_dataset_model_1"):
+def load_model(model_name="self_dataset_model_1"):
     current_dir = os.path.abspath(os.path.dirname(__file__))
     self_model = SelfASLModel(input_channels=3, hidden_units=70, output_shape=26).to(device)
     self_state_dict = torch.load(f'{current_dir}/models/{model_name}.pth', map_location=torch.device(device), weights_only=True)
@@ -236,74 +250,69 @@ def WebcamPipeline(transform, device, self_model, class_names):
     cv2.destroyAllWindows()
 
 
-def frameInference(image, model, device):
-    transform = getTransforms()
-    class_names = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-    # model = load_model(device)
 
+def frameInference(image, model):
+    
     # Initialize MediaPipe Hands and Drawing utils
-    mp_hands = mp.solutions.hands
-    mp_drawing = mp.solutions.drawing_utils
-    with mp_hands.Hands(static_image_mode=True, max_num_hands=1, min_detection_confidence=0.7) as hands:
+    
 
-        # Convert PIL Image to numpy array
-        image_np = np.array(image)
 
-        # Process the frame to detect hands
-        results = hands.process(image_np)
+    # Convert PIL Image to numpy array
+    image_np = np.array(image)
 
-        # Check if hands were detected
-        if not results.multi_hand_landmarks:
-            print("No hand detected")
-            return None
+    # Process the frame to detect hands
+    results = hands.process(image_np)
 
-        # Create a black background image
-        black_background = np.zeros((image.height, image.width, 3), dtype=np.uint8)
-        
-        top3_preds = torch.zeros(3, dtype=torch.long, device=device)
-        top3_confidences = torch.zeros(3, device=device)
+    # Check if hands were detected
+    if not results.multi_hand_landmarks:
+        print("No hand detected")
+        return None
 
-        # If hands are detected, draw the landmarks using MediaPipe's built-in function
-        for hand_landmarks in results.multi_hand_landmarks:
-            # Draw hand landmarks with white lines and red connectors
-            mp_drawing.draw_landmarks(
-                black_background, 
-                hand_landmarks, 
-                mp_hands.HAND_CONNECTIONS, 
-                mp_drawing.DrawingSpec(color=(255, 0, 0), thickness=2, circle_radius=2),  # Red connectors for joints
-                mp_drawing.DrawingSpec(color=(255, 255, 255), thickness=2, circle_radius=2)  # White lines for landmarks
-                
-            )
-            cropped_image = crop_to_hand(black_background, hand_landmarks)
-            # Convert the background with drawn landmarks to a PIL image
-            cropped_image_pil = Image.fromarray(cropped_image)
-            # Convert the cropped image to a format compatible with your model
-            input_tensor = transform(cropped_image_pil).to(device)
-            input_tensor = input_tensor.unsqueeze(0)  # Add a batch dimension
+    # Create a black background image
+    black_background = np.zeros((image.height, image.width, 3), dtype=np.uint8)
+    
+    
 
-            with torch.inference_mode():
-                output = model(input_tensor)
-                probabilities = torch.nn.functional.softmax(output, dim=1)
-                topk = torch.topk(probabilities, 3)
-                top3_confidences, top3_preds = topk.values[0], topk.indices[0]
+    # If hands are detected, draw the landmarks using MediaPipe's built-in function
+    for hand_landmarks in results.multi_hand_landmarks:
+        # Draw hand landmarks with white lines and red connectors
+        mp_drawing.draw_landmarks(
+            black_background, 
+            hand_landmarks, 
+            mp_hands.HAND_CONNECTIONS, 
+            mp_drawing.DrawingSpec(color=(255, 0, 0), thickness=2, circle_radius=2),  # Red connectors for joints
+            mp_drawing.DrawingSpec(color=(255, 255, 255), thickness=2, circle_radius=2)  # White lines for landmarks
+            
+        )
+        cropped_image = crop_to_hand(black_background, hand_landmarks)
+        # Convert the background with drawn landmarks to a PIL image
+        cropped_image_pil = Image.fromarray(cropped_image)
+        # Convert the cropped image to a format compatible with your model
+        input_tensor = transform(cropped_image_pil).to(device)
+        input_tensor = input_tensor.unsqueeze(0)  # Add a batch dimension
 
-        # Get the top 3 predicted classes and confidences
-        predictions = []
-        for i in range(3):
-            class_name = class_names[top3_preds[i].item()]
-            confidence = top3_confidences[i].item()
-            predictions.append((class_name, confidence))
+        with torch.inference_mode():
+            output = model(input_tensor)
+            probabilities = torch.nn.functional.softmax(output, dim=1)
+            topk = torch.topk(probabilities, 3)
+            top3_confidences, top3_preds = topk.values[0], topk.indices[0]
 
-        # Draw predictions on the image
-        # draw = ImageDraw.Draw(cropped_image_pil)
-        # for i, (class_name, confidence) in enumerate(predictions):
-        #     draw.text((10, 10 + i * 20), f"{class_name}: {confidence:.2f}", fill="white")
+    # Get the top 3 predicted classes and confidences
+    predictions = []
+    for i in range(3):
+        class_name = class_names[top3_preds[i].item()]
+        confidence = top3_confidences[i].item()
+        predictions.append((class_name, confidence))
 
-        return class_names[top3_preds[0].item()], top3_confidences[0].item(), cropped_image_pil
+    # Draw predictions on the image
+    # draw = ImageDraw.Draw(cropped_image_pil)
+    # for i, (class_name, confidence) in enumerate(predictions):
+    #     draw.text((10, 10 + i * 20), f"{class_name}: {confidence:.2f}", fill="white")
+
+    return class_names[top3_preds[0].item()], top3_confidences[0].item(), cropped_image_pil
 
 
 if __name__ == "__main__":
-    device = getDevice()
     transform = getTransforms()
     class_names = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
     self_model = load_model(device, class_names, model_name='self_dataset_model_1')

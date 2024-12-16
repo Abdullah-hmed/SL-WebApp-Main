@@ -8,13 +8,12 @@ import numpy as np
 import datetime
 from functools import lru_cache
 import threading
-from ASLAlphabet import frameInference, load_model, getDevice
+from ASLAlphabet import frameInference, load_model
 
 app = Flask(__name__)
 socketio = SocketIO(app, async_mode='threading', compression=True)
 
-device = getDevice()
-model = load_model(device)
+model = load_model()
 
 @app.route('/')
 def index():
@@ -38,7 +37,7 @@ def process_image(data):
     # image.save(f's/image_{datetime.datetime.now()}.jpg')
     
     # Process the image
-    pred = frameInference(image, model, device)
+    pred = frameInference(image, model)
 
     
     if pred is not None:
