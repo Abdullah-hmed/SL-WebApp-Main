@@ -1,4 +1,5 @@
-FROM python:3.10-slim
+# Stage 1: Base image with system dependencies
+FROM python:3.10-slim AS base
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -6,18 +7,33 @@ RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# Set the working directory
+# Stage 2: Dependencies installation
+FROM base AS dependencies
+
+# Set working directory
 WORKDIR /app
 
-# Copy only requirements.txt first for dependency installation caching
-COPY App/requirements.txt /app/requirements.txt
+# Copy only the requirements file
+COPY App/requirements.txt ./requirements.txt
 
-# Upgrade pip and install Python dependencies
+# Upgrade pip and install dependencies
 RUN pip install --upgrade pip \
-    && pip install --no-cache-dir -r /app/requirements.txt \
-    && pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+    && pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application code
+RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+
+
+# Stage 3: Final image
+FROM base
+
+# Set working directory
+WORKDIR /app
+
+# Copy installed dependencies from previous stage
+COPY --from=dependencies /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
+COPY --from=dependencies /usr/local/bin /usr/local/bin
+
+# Copy application files
 COPY App /app
 
 # Expose the application port
