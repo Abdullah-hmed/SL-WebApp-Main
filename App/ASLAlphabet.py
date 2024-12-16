@@ -30,6 +30,7 @@ def getTransforms():
 
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
+print(f"Device: {device}")
 transform = getTransforms()
 class_names = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 top3_preds = torch.zeros(3, dtype=torch.long, device=device)
