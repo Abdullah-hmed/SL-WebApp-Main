@@ -5,6 +5,7 @@ from io import BytesIO
 from PIL import Image
 import random
 import numpy as np
+import gdown
 import datetime
 from functools import lru_cache
 import threading
@@ -45,7 +46,6 @@ if model_available():
 else:
     print("Exiting the application: Model Not Available.")
     exit(1)
-
 
 
 @app.route('/')
