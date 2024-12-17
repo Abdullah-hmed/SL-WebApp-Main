@@ -31,13 +31,17 @@ WORKDIR /app
 # Copy all dependencies
 COPY --from=pytorch-deps /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
 COPY --from=dependencies /usr/local/bin /usr/local/bin
-# Copy application files
+
+# Copy entire App directory
 COPY App /app
+
 # Expose the application port
 EXPOSE 3000
+
 # Set environment variables for Flask
 ENV FLASK_APP=webapp.py
 ENV FLASK_RUN_HOST=0.0.0.0
 ENV FLASK_RUN_PORT=3000
+
 # Run the Flask application
 CMD ["python", "webapp.py"]
