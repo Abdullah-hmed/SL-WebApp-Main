@@ -28,6 +28,17 @@ def getTransforms():
     ])
     return transform
 
+def check_gpu_availability():
+    print("Checking GPU Availability:")
+    print(f"CUDA Available: {torch.cuda.is_available()}")
+    if torch.cuda.is_available():
+        print(f"CUDA Device Name: {torch.cuda.get_device_name(0)}")
+        print(f"CUDA Device Count: {torch.cuda.device_count()}")
+        print(f"Current CUDA Device: {torch.cuda.current_device()}")
+    else:
+        print("No CUDA-capable GPU found")
+
+check_gpu_availability()
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f"Device: {device}")
