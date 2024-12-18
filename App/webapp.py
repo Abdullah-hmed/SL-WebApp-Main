@@ -1,19 +1,20 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO
-import base64, os
 from io import BytesIO
 from PIL import Image
-import random
 import numpy as np
-import gdown
-import datetime
-from functools import lru_cache
-import threading
+import random, gdown, datetime, threading, base64, os
 from ASLAlphabet import frameInference, load_model
 
-app = Flask(__name__)
-socketio = SocketIO(app, async_mode='threading', compression=True)
+from blueprints.FrontPage.frontpage import frontpage_bp
+from blueprints.Auth.auth import auth_bp
 
+app = Flask(__name__)
+app.register_blueprint(frontpage_bp)
+app.register_blueprint(auth_bp)
+
+
+socketio = SocketIO(app, async_mode='threading', compression=True)
 
 def model_available():
     models_dir = 'models'
@@ -48,31 +49,26 @@ else:
     exit(1)
 
 
-@app.route('/')
+@app.route('/classify')
 def index():
-    return render_template('index.html')
+    return render_template('classify.html')
 
 @socketio.on('message')
 def handle_message(data):
     threading.Thread(target=process_image, args=(data,)).start()
 
 def process_image(data):
-    
     # Process the received image data
     header, encoded = data.split(',', 1)
-    
     # Decode the image data
     image_data = base64.b64decode(encoded)
-    
     # Load the image using PIL
     image = Image.open(BytesIO(image_data))
     
     # image.save(f's/image_{datetime.datetime.now()}.jpg')
-    
     # Process the image
     pred = frameInference(image, model)
 
-    
     if pred is not None:
         
         pred_class, pred_confidence, processed_image = pred
@@ -89,8 +85,7 @@ def process_image(data):
             'image': image_io.getvalue()
         }
         print(response_message.get('class'), response_message.get('confidence'))
-        socketio.emit('prediction', response_message)
-        
+        socketio.emit('prediction', response_message)        
         print("Received image data")
     else:
         socketio.emit('prediction', {'class': "No Hand Detected", 'confidence': 0})

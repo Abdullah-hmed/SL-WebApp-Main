@@ -1,3 +1,4 @@
+import gdown
 import torch
 from torch import nn
 import matplotlib.pyplot as plt
@@ -17,7 +18,6 @@ import torch
 from torchvision import transforms
 from torch import nn
 import torch.nn.functional as F
-
 
 
 def getTransforms():
