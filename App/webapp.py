@@ -6,13 +6,7 @@ import numpy as np
 import random, gdown, datetime, threading, base64, os
 from ASLAlphabet import frameInference, load_model
 
-from blueprints.FrontPage.frontpage import frontpage_bp
-from blueprints.Auth.auth import auth_bp
-
 app = Flask(__name__)
-app.register_blueprint(frontpage_bp)
-app.register_blueprint(auth_bp)
-
 
 socketio = SocketIO(app, async_mode='threading', compression=True)
 
