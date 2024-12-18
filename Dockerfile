@@ -33,7 +33,7 @@ COPY --from=pytorch-deps /usr/local/lib/python3.10/site-packages /usr/local/lib/
 COPY --from=dependencies /usr/local/bin /usr/local/bin
 
 # Copy entire App directory
-COPY App /app
+COPY Flask-Backend /app
 
 # Expose the application port
 EXPOSE 3000

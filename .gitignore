@@ -4,3 +4,8 @@ s
 models
 *.env
 *.ipynb
+
+
+
+
+node_modules/
