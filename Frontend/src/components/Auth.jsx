@@ -93,6 +93,8 @@ const AuthForm = ({ isLogin, setIsLogin, setServerResponse }) => {
                 throw new Error(result.message || "Authentication failed");
             }
 
+            console.log(result);
+
             setServerResponse(result.message);
         } catch (error) {
             setServerResponse(error.message);
