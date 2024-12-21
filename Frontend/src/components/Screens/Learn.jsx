@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Webcam from "react-webcam";
 import { ArrowRightIcon, Camera, ImageIcon, PlayIcon } from 'lucide-react';
+import WebcamProcessor from '../WebcamProcessor';
 
 const words = [
     {
@@ -66,13 +67,14 @@ const PracticeButton = ({isPracticing, setIsPracticing}) => {
     )
 }
 
-const Tabs = ({activeTab, setActiveTab}) => {
+const Tabs = ({activeTab, setActiveTab, isPracticing}) => {
     return (
         <div className="flex justify-center mb-3 w-full 
                     border-gray-200 border rounded-xl bg-gray-100">
             <button 
                 className={`flex flex-grow items-center justify-center gap-2 px-8 py-2 transition-all duration-300 rounded-s-xl
                             ${activeTab === 'image' ? 'bg-purple-100 text-purple-600' : 'bg-gray-50 text-gray-700 hover:bg-gray-100'}`}
+                disabled={isPracticing}
                 onClick={() => setActiveTab('image')}
             >
                 <ImageIcon className='w-4 h-4' />
@@ -81,6 +83,7 @@ const Tabs = ({activeTab, setActiveTab}) => {
             <button 
                 className={`flex flex-grow items-center justify-center gap-2 px-8 py-2 transition-all duration-300 rounded-e-xl
                             ${activeTab === 'video' ? 'bg-purple-100 text-purple-600' : 'bg-gray-50 text-gray-700 hover:bg-gray-100'}`}
+                disabled={isPracticing}
                 onClick={() => setActiveTab('video')}
             >
                 <PlayIcon className='w-4 h-4' />
@@ -113,16 +116,9 @@ function Learn () {
             
             <div className='max-w-screen-md p-5 flex flex-col items-center justify-center 
                             aspect-[600/400] mx-auto bg-white shadow-2xl rounded-lg'>
-                <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
+                <Tabs activeTab={activeTab} setActiveTab={setActiveTab} isPracticing={isPracticing} />
                 {isPracticing ? (
-                    <Webcam
-                        audio={false}
-                        screenshotFormat="image/jpeg"
-                        width={600}
-                        height={400}
-                        mirrored={true}
-                        className="mx-auto rounded-xl"
-                    />
+                    <WebcamProcessor isPracticing={isPracticing} setIsPracticing={setIsPracticing} />
                 ) : (activeTab === 'video' ? (
                             <video
                                 id="word-video"
