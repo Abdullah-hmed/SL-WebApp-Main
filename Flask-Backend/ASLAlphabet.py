@@ -321,7 +321,7 @@ def frameInference(image, model):
     # for i, (class_name, confidence) in enumerate(predictions):
     #     draw.text((10, 10 + i * 20), f"{class_name}: {confidence:.2f}", fill="white")
 
-    return class_names[top3_preds[0].item()], top3_confidences[0].item(), cropped_image_pil
+    return class_names[top3_preds[0].item()], top3_confidences[0].item()
 
 
 if __name__ == "__main__":

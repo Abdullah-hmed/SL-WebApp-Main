@@ -4,7 +4,7 @@ const context = canvas.getContext('2d');
 const predictionDiv = document.getElementById('prediction');
 const processedImage = document.getElementById('processedImage');
 const aspect = document.getElementById('aspectRatio');
-FRAME_DELAY = 500;
+FRAME_DELAY = 0;
 
 // Establish WebSocket connection using Socket.IO
 const socket = io();
