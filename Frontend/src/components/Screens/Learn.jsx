@@ -27,12 +27,12 @@ const words = [
 const WordDisplay = ({word}) => {
     
     return (
-        <div className="p-4 mx-auto">
+        <div className="sm:p-4 p-2 mx-auto">
             <div className="text-center">
-                <h1 className="text-3xl font-bold text-purple-600 mb-2">
+                <h1 className="text-2xl sm:text-3xl font-bold text-purple-600 sm:mb-2">
                     {words[word].word}
                 </h1>
-                <p className="text-gray-600 text-sm">
+                <p className="text-gray-600 text-xs sm:text-sm">
                     {words[word].meaning}
                 </p>
             </div>
@@ -40,7 +40,7 @@ const WordDisplay = ({word}) => {
     )
 }
 
-const NextWordButton = ({word, setWord, isPracticing, handleContentLoading}) => (
+const NextWordButton = ({isPracticing, handleContentLoading}) => (
     <button 
         disabled={isPracticing}
         className={`flex flex-grow gap-2 items-center justify-center 
@@ -93,7 +93,7 @@ const Tabs = ({activeTab, setActiveTab, isPracticing}) => {
     )
 }
 
-function Learn () {
+function LearnScreen () {
 
     const [word, setWord] = useState(0);
     const [isPracticing, setIsPracticing] = useState(false);
@@ -111,11 +111,11 @@ function Learn () {
 
 
     return (
-        <div className='items-center justify-center mx-2'>
+        <div className='items-center justify-center mx-3'>
             <WordDisplay word={word} setWord={setWord} />
             
             <div className='max-w-screen-md p-5 flex flex-col items-center justify-center 
-                            aspect-[600/400] mx-auto bg-white shadow-2xl rounded-lg'>
+                            aspect-[600/400] mx-auto bg-white shadow-xl rounded-lg'>
                 <Tabs activeTab={activeTab} setActiveTab={setActiveTab} isPracticing={isPracticing} />
                 {isPracticing ? (
                     <WebcamProcessor isPracticing={isPracticing} setIsPracticing={setIsPracticing} />
@@ -138,12 +138,13 @@ function Learn () {
                                 alt="word"
                             />
                         )
-                )}
+                    )
+                }
                 
                 
                 <div className='flex gap-3 justify-between w-full'>
                     <PracticeButton isPracticing={isPracticing} setIsPracticing={setIsPracticing}  />
-                    <NextWordButton word={word} setWord={setWord} isPracticing={isPracticing} handleContentLoading={handleContentLoading} />
+                    <NextWordButton isPracticing={isPracticing} handleContentLoading={handleContentLoading} />
                 </div>
             </div>
         </div>
@@ -151,4 +152,4 @@ function Learn () {
 }
 
 
-export default Learn;
+export default LearnScreen;
