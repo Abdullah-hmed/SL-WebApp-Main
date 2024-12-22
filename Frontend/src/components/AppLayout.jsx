@@ -1,8 +1,9 @@
 import React from 'react';
 import { useState } from 'react';
-import Learn from './Screens/Learn.jsx';
-import Quiz from './Screens/Quiz.jsx';
-import Account from './Screens/Account.jsx';
+import HomeScreen from './Screens/Home.jsx';
+import LearnScreen from './Screens/Learn.jsx';
+import QuizScreen from './Screens/Quiz.jsx';
+import AccountScreen from './Screens/Account.jsx';
 import { 
   Flame, 
   Heart,
@@ -76,12 +77,14 @@ const BottomIcons = ({activeButton, setActiveButton}) => {
 
 const chooseComponent = (activeButton) => {
     switch (activeButton) {
+        case 'Home':
+            return <HomeScreen />;
         case 'Learn':
-            return <Learn />;
+            return <LearnScreen />;
         case 'Quiz':
-            return <Quiz />;
+            return <QuizScreen />;
         case 'Account':
-            return <Account />;
+            return <AccountScreen />;
         default:
             return null;
     }
