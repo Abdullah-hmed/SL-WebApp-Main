@@ -1,10 +1,11 @@
 import React from 'react';
-import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { useState, Suspense} from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import HomeScreen from './Screens/Home.jsx';
 import LearnScreen from './Screens/Learn.jsx';
 import QuizScreen from './Screens/Quiz.jsx';
 import AccountScreen from './Screens/Account.jsx';
+import PageTransition from './PageTransition.jsx';
 import { 
   Book,
   Gamepad,
@@ -37,10 +38,9 @@ const BottomButtons = [
     { name: 'Account', path:'/account', icon: User }
 ]
 
-const BottomIcons = ({activeButton, setActiveButton}) => {
-    const handleButtonClick = (name) => {
-        setActiveButton(name);
-    };
+const BottomIcons = () => {
+    const location = useLocation();
+    const currentPath = location.pathname;
     
     return (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-purple-100 shadow-lg">
@@ -48,15 +48,14 @@ const BottomIcons = ({activeButton, setActiveButton}) => {
                 <div className="flex justify-around items-center">
                     {BottomButtons.map((item) => {
                         const Icon = item.icon;
-                        const isActive = activeButton === item.name;
+                        const isActive = currentPath === item.path;
                         return (
                             <Link 
                                 key={item.name}
                                 to={item.path}
-                                onClick={() =>handleButtonClick(item.name)}
                                 className={`flex flex-col items-center gap-1 px-4 py-1 w-full
                                         hover:bg-gray-100 transition-all duration-300 rounded-xl ${isActive ? 'scale-105' : ''} `}
-                                >
+                            >
                                 <Icon className={`text-2xl ${isActive ? 'text-purple-600' : 'text-gray-600'} transition-transform duration-200`} />
                                 <span className={`text-sm font-medium ${isActive ? 'text-purple-600' : 'text-gray-600'}`}>
                                     {item.name}
@@ -93,19 +92,28 @@ const BottomBar = ({activeButton, setActiveButton}) => {
 )};
 
 
+const Loading = () => (
+    <h3>Loading...</h3>
+)
+
+
 function AppLayout () {
     const [activeButton, setActiveButton] = useState('Home');
 
     return (
         <Router>
             <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 pb-20 
-                            select-none ">
-                <Routes>
-                    <Route path="/" element={<HomeScreen />} />
-                    <Route path="/learn" element={<LearnScreen />} />
-                    <Route path="/quiz" element={<QuizScreen />} />
-                    <Route path="/account" element={<AccountScreen />} />
-                </Routes>
+                            select-none">
+                <Suspense fallback={<Loading />}>
+                    <PageTransition>
+                        <Routes>
+                            <Route path="/" element={<HomeScreen />} />
+                            <Route path="/learn" element={<LearnScreen />} />
+                            <Route path="/quiz" element={<QuizScreen />} />
+                            <Route path="/account" element={<AccountScreen />} />
+                        </Routes>
+                    </PageTransition >
+                </Suspense>
                 <BottomBar activeButton={activeButton} setActiveButton={setActiveButton} />
             </div>
         </Router>
