@@ -26,21 +26,21 @@ const Header = () => (
 const Card = ({title, description, status}) => {
     const statusStyles = {
         purple: {
-            statusColor: 'bg-purple-100',
+            statusColor: 'bg-purple-00',
             statusIconColor: 'text-purple-500',
-            cardColor: 'bg-purple-50',
+            cardColor: 'bg-purple-100',
             hoverColor: 'hover:bg-purple-200',
         },
         green: {
             statusColor: 'bg-green-100',
             statusIconColor: 'text-green-500',
-            cardColor: 'bg-green-50',
+            cardColor: 'bg-green-100',
             hoverColor: 'hover:bg-green-200',
         },
         red: {
             statusColor: 'bg-red-100',
             statusIconColor: 'text-red-500',
-            cardColor: 'bg-red-50',
+            cardColor: 'bg-red-100',
             hoverColor: 'hover:bg-red-200',
         },
     };

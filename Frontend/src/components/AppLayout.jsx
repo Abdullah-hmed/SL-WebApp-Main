@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import HomeScreen from './Screens/Home.jsx';
 import LearnScreen from './Screens/Learn.jsx';
 import QuizScreen from './Screens/Quiz.jsx';
@@ -30,10 +31,10 @@ const TopBar = ({setActiveButton}) => (
 );
 
 const BottomButtons = [
-    { name: 'Home', icon: Home },
-    { name: 'Learn', icon: Book },
-    { name: 'Quiz', icon: Gamepad },
-    { name: 'Account', icon: User }
+    { name: 'Home', path:'/', icon: Home },
+    { name: 'Learn', path:'/learn', icon: Book },
+    { name: 'Quiz', path:'/quiz', icon: Gamepad },
+    { name: 'Account', path:'/account', icon: User }
 ]
 
 const BottomIcons = ({activeButton, setActiveButton}) => {
@@ -49,17 +50,18 @@ const BottomIcons = ({activeButton, setActiveButton}) => {
                         const Icon = item.icon;
                         const isActive = activeButton === item.name;
                         return (
-                            <button 
+                            <Link 
                                 key={item.name}
+                                to={item.path}
+                                onClick={() =>handleButtonClick(item.name)}
                                 className={`flex flex-col items-center gap-1 px-4 py-1 w-full
                                         hover:bg-gray-100 transition-all duration-300 rounded-xl ${isActive ? 'scale-105' : ''} `}
-                                onClick={() =>handleButtonClick(item.name)}
                                 >
                                 <Icon className={`text-2xl ${isActive ? 'text-purple-600' : 'text-gray-600'} transition-transform duration-200`} />
                                 <span className={`text-sm font-medium ${isActive ? 'text-purple-600' : 'text-gray-600'}`}>
                                     {item.name}
                                 </span>
-                            </button>
+                            </Link>
                         )})
                     }
                 </div>
@@ -95,11 +97,18 @@ function AppLayout () {
     const [activeButton, setActiveButton] = useState('Home');
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 pb-20 select-none">
-            {/* <TopBar setActiveButton={setActiveButton} /> */}
-            {chooseComponent(activeButton)}
-            <BottomBar activeButton={activeButton} setActiveButton={setActiveButton} />
-        </div>
+        <Router>
+            <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 pb-20 
+                            select-none ">
+                <Routes>
+                    <Route path="/" element={<HomeScreen />} />
+                    <Route path="/learn" element={<LearnScreen />} />
+                    <Route path="/quiz" element={<QuizScreen />} />
+                    <Route path="/account" element={<AccountScreen />} />
+                </Routes>
+                <BottomBar activeButton={activeButton} setActiveButton={setActiveButton} />
+            </div>
+        </Router>
     );
 };
 
