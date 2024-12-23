@@ -1,4 +1,5 @@
 import { CheckCircle, ChevronRight, Flame, Settings, Target, Calendar, Clock, Trophy } from "lucide-react"
+import { Link } from "react-router-dom";
 
 
 const Header = () => (
@@ -15,9 +16,9 @@ const Header = () => (
                     </div>
                 </div>
             </div>
-            <button>
+            <Link to={'/account'}>
                 <Settings className="w-6 h-6 text-gray-600 hover:text-gray-800 transition-all" />
-            </button>
+            </Link>
         </div>
     </div>
 );
@@ -87,20 +88,27 @@ const ProgressOverview = () => (
 
 const QuickActions = () => (
     <div className="grid grid-cols-2 gap-4 mb-6">
-        <button className="bg-orange-50 p-4 rounded-lg flex flex-col items-center justify-center hover:bg-orange-100 transition-all shadow-lg">
+        <Link 
+            className="bg-orange-50 p-4 rounded-lg flex flex-col
+                         items-center justify-center hover:bg-orange-100
+                         transition-all shadow-lg"
+            to={'/learn'}>
             <div className="bg-orange-100 p-2 rounded-lg mb-2">
                 <Clock className="w-6 h-6 text-orange-500" />
             </div>
             <span className="font-medium text-gray-800">Quick Practice</span>
             <span className="text-sm text-gray-600">5 min lesson</span>
-        </button>
-        <button className="bg-green-50 p-4 rounded-lg flex flex-col items-center justify-center hover:bg-green-100 transition-all shadow-lg">
+        </Link>
+        <Link 
+            className="bg-green-50 p-4 rounded-lg flex flex-col items-center justify-center
+                         hover:bg-green-100 transition-all shadow-lg"
+            to={'/quiz'}>
             <div className="bg-green-100 p-2 rounded-lg mb-2">
                 <Trophy className="w-6 h-6 text-green-500" />
             </div>
             <span className="font-medium text-gray-800">Daily Challenge</span>
             <span className="text-sm text-gray-600">Earn bonus XP</span>
-        </button>
+        </Link>
     </div>
 );
 
