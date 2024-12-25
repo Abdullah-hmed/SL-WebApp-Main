@@ -1,6 +1,7 @@
 import express from 'express';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
+import { parse } from 'uuid';
 
 dotenv.config();
 
@@ -29,7 +30,7 @@ router.post('/signup', async (req, res) => {
         const userId = authData.user.id;
 
         const { error: dbError } = await supabase.from('users').insert([
-            { id: userId, username },
+            { id: userId, username, email },
         ]);
 
         if (dbError) {
@@ -86,6 +87,33 @@ router.post('/logout', async (req, res) => {
         console.error('Server Error:', err);
         return res.status(500).json({ message: "Server Error!"});
 
+    }
+});
+
+
+router.post('/userdata', async (req, res) => {
+    const { user_id } = req.body; // Extract user_id from the request body
+  
+    if (!user_id) {
+      return res.status(400).json({ error: 'user_id is required' });
+    }
+
+    try {
+                
+        // Call the stored function to fetch user data from Supabase
+        const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', user_id)
+            .single();
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+    
+        // Return the user data as JSON
+        res.status(200).json(data);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 
