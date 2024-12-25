@@ -1,11 +1,12 @@
 import React from 'react';
 import { useState, Suspense} from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import HomeScreen from './Screens/Home.jsx';
 import LearnScreen from './Screens/Learn.jsx';
 import QuizScreen from './Screens/Quiz.jsx';
 import AccountScreen from './Screens/Account.jsx';
-import PageTransition from './PageTransition.jsx';
+import PageTransition from './utils/PageTransition.jsx';
+import Auth from './Auth.jsx';
 import { 
   Book,
   Gamepad,
@@ -86,9 +87,7 @@ const chooseComponent = (activeButton) => {
 
 const BottomBar = ({activeButton, setActiveButton}) => {
     return (
-        <div className="flex justify-center">
-            <BottomIcons activeButton={activeButton} setActiveButton={setActiveButton} />
-        </div>
+    <BottomIcons activeButton={activeButton} setActiveButton={setActiveButton} />
 )};
 
 
@@ -99,24 +98,24 @@ const Loading = () => (
 
 function AppLayout () {
     const [activeButton, setActiveButton] = useState('Home');
+    
 
     return (
-        <Router>
-            <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 pb-20 
-                            select-none">
-                <Suspense fallback={<Loading />}>
-                    <PageTransition>
-                        <Routes>
-                            <Route path="/" element={<HomeScreen />} />
-                            <Route path="/learn" element={<LearnScreen />} />
-                            <Route path="/quiz" element={<QuizScreen />} />
-                            <Route path="/account" element={<AccountScreen />} />
-                        </Routes>
-                    </PageTransition >
-                </Suspense>
-                <BottomBar activeButton={activeButton} setActiveButton={setActiveButton} />
-            </div>
-        </Router>
+        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 pb-20 
+                        select-none">
+            <Suspense fallback={<Loading />}>
+                <PageTransition>
+                    <Routes>
+                        <Route path="/" element={<Navigate to="/home" />} />
+                        <Route path="/home" element={<HomeScreen />} />
+                        <Route path="/learn" element={<LearnScreen />} />
+                        <Route path="/quiz" element={<QuizScreen />} />
+                        <Route path="/account" element={<AccountScreen />} />
+                    </Routes>
+                </PageTransition >
+            </Suspense>
+            <BottomBar activeButton={activeButton} setActiveButton={setActiveButton} />
+        </div>
     );
 };
 

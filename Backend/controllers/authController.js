@@ -61,7 +61,12 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ error: authError.message });
         } 
 
-        return res.status(200).json({ message: 'User logged in!' });
+        return res.status(200).json({ 
+            message: 'User logged in!',
+            accessToken: authData.session.access_token,
+            refreshToken: authData.session.refresh_token,
+            user: authData.user
+         });
 
     } catch (err) {
         console.error('Server Error:', err);
@@ -71,7 +76,7 @@ router.post('/login', async (req, res) => {
 });
 
 // SIGN OUT
-router.post('/signout', async (req, res) => {
+router.post('/logout', async (req, res) => {
     try {
 
         await supabase.auth.signOut();
