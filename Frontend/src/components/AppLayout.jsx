@@ -1,12 +1,11 @@
 import React from 'react';
 import { useState, Suspense} from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
+import { Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import HomeScreen from './Screens/Home.jsx';
 import LearnScreen from './Screens/Learn.jsx';
 import QuizScreen from './Screens/Quiz.jsx';
 import AccountScreen from './Screens/Account.jsx';
 import PageTransition from './utils/PageTransition.jsx';
-import Auth from './Auth.jsx';
 import { 
   Book,
   Gamepad,
