@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { EyeIcon, EyeOff } from 'lucide-react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { saveToken } from './utils/authUtils';
-
+import { isAuthenticated } from './utils/authUtils';
 
 const loginUser = async (formData) => {
     const response = await fetch('http://localhost:5000/auth/login', {
@@ -157,11 +157,7 @@ function Auth() {
 
     return (
         <div className="auth-container">
-            <AuthForm 
-                isLogin={isLogin} 
-                setIsLogin={setIsLogin} 
-                
-            />
+            {isAuthenticated() ? <Navigate to="/home" /> : <AuthForm isLogin={isLogin} setIsLogin={setIsLogin} />}
         </div>
     );
 }
