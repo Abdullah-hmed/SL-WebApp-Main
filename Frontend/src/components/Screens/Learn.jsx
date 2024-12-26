@@ -3,26 +3,13 @@ import Webcam from "react-webcam";
 import { ArrowRightIcon, Camera, ImageIcon, PlayIcon } from 'lucide-react';
 import WebcamProcessor from '../WebcamProcessor';
 
-const words = [
-    {
-        word: "Hello",
-        meaning: "Hi",
-        image: "https://picsum.photos/id/23/600/400",
-        video: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-    },
-    {
-        word: "Joe",
-        meaning: "Mama",
-        image: "https://picsum.photos/id/22/600/400",
-        video: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
-    },
-    {
-        word: "Donald",
-        meaning: "Trump",
-        image: "https://picsum.photos/id/237/600/400",
-        video: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
-    }
-]
+const words = Array.from('abcdefghijklmnopqrstuvwxyz').map((letter) => ({
+    word: letter.toUpperCase(),
+    meaning: `Meaning of ${letter.toUpperCase()}`,
+    image: `https://www.handspeak.com/pix/abc/asl/asl${letter}.gif`,
+    video: `http://localhost:5000/proxy-video/${letter}`,
+    
+}))
 
 const WordDisplay = ({word}) => {
     
@@ -123,9 +110,11 @@ function LearnScreen () {
                             <video
                                 id="word-video"
                                 className={`w-full h-full rounded-lg transition-opacity duration-300`}
+                                crossOrigin='anonymous'
                                 src={words[word].video}
                                 onClick={(e) => e.target.paused ? e.target.play() : e.target.pause()}
                                 autoPlay
+                                muted
                             />
                         ) : (
                             
@@ -134,6 +123,7 @@ function LearnScreen () {
                                 className={`w-full h-full rounded-lg aspect-[600/400] 
                                     transition-opacity duration-300 ${contentLoading ? 'opacity-0' : 'opacity-100'}`}
                                 onLoad={handleContentLoaded}
+                                referrerPolicy='no-referrer'
                                 src={words[word].image} 
                                 alt="word"
                             />
