@@ -3,13 +3,23 @@ import Webcam from "react-webcam";
 import { ArrowRightIcon, Camera, ImageIcon, PlayIcon } from 'lucide-react';
 import WebcamProcessor from '../WebcamProcessor';
 
-const words = Array.from('abcdefghijklmnopqrstuvwxyz').map((letter) => ({
-    word: letter.toUpperCase(),
-    meaning: `Meaning of ${letter.toUpperCase()}`,
-    image: `https://www.handspeak.com/pix/abc/asl/asl${letter}.gif`,
-    video: `http://localhost:5000/proxy-video/${letter}`,
+const fetchWords = async () => {
+    const response = await fetch('http://localhost:5000/db/flashcards/alphabets');
+    const data = await response.json();
+    return data;
+}
+
+// const wordHardcoded = Array.from('abcdefghijklmnopqrstuvwxyz').map((letter) => ({
+//     word: letter.toUpperCase(),
+//     meaning: `Meaning of ${letter.toUpperCase()}`,
+//     image: `https://www.handspeak.com/pix/abc/asl/asl${letter}.gif`,
+//     video: `http://localhost:5000/proxy-video/${letter}`,
     
-}))
+// }))
+
+const words = await fetchWords();
+
+console.log(words);
 
 const WordDisplay = ({word}) => {
     
@@ -17,10 +27,10 @@ const WordDisplay = ({word}) => {
         <div className="sm:p-4 p-2 mx-auto">
             <div className="text-center">
                 <h1 className="text-2xl sm:text-3xl font-bold text-purple-600 sm:mb-2">
-                    {words[word].word}
+                    {words[word].sign_text}
                 </h1>
                 <p className="text-gray-600 text-xs sm:text-sm">
-                    {words[word].meaning}
+                    {words[word].sign_description}
                 </p>
             </div>
         </div>
@@ -107,15 +117,19 @@ function LearnScreen () {
                 {isPracticing ? (
                     <WebcamProcessor isPracticing={isPracticing} setIsPracticing={setIsPracticing} />
                 ) : (activeTab === 'video' ? (
+                            
                             <video
                                 id="word-video"
                                 className={`w-full h-full rounded-lg transition-opacity duration-300`}
                                 crossOrigin='anonymous'
-                                src={words[word].video}
+                                src={words[word].video_url}
                                 onClick={(e) => e.target.paused ? e.target.play() : e.target.pause()}
+                                preload='auto'
                                 autoPlay
                                 muted
                             />
+
+                            
                         ) : (
                             
                             <img 
@@ -124,7 +138,7 @@ function LearnScreen () {
                                     transition-opacity duration-300 ${contentLoading ? 'opacity-0' : 'opacity-100'}`}
                                 onLoad={handleContentLoaded}
                                 referrerPolicy='no-referrer'
-                                src={words[word].image} 
+                                src={words[word].image_url} 
                                 alt="word"
                             />
                         )

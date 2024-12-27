@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import authRoutes from './controllers/authController.js';
+import dbRoutes from './controllers/dbController.js';
 import cors from 'cors';
 
 dotenv.config();
@@ -15,6 +16,8 @@ app.use(cors({
 app.use(express.json());
 
 app.use('/auth', authRoutes);
+
+app.use('/db', dbRoutes);
 
 app.get('/proxy-video/:letter', async (req, res) => {
     const letter = req.params.letter.toLowerCase();
