@@ -1,15 +1,16 @@
 import { CheckCircle, ChevronRight, Flame, Settings, Target, Calendar, Clock, Trophy } from "lucide-react"
 import { Link } from "react-router-dom";
+import { getUserData } from "../utils/authUtils";
 
 
-const Header = () => (
+const Header = ({ userData }) => (
     <div className="w-full bg-white shadow-md p-4 mb-4 sticky top-0 z-50">
         <div className="flex justify-between items-center">
             <div className="flex gap-4 items-center">
                 <p className="bg-purple-100 rounded-full w-10 h-10 flex items-center justify-center 
-                                text-purple-500 font-bold hover:bg-purple-200 transition-all">{userData.name.split("", 1)}</p>
+                                text-purple-500 font-bold hover:bg-purple-200 transition-all">{userData.username.split("", 1)}</p>
                 <div className="flex flex-col">
-                    <h1 className="font-semibold">Welcome Back, <span className="hover:text-purple-800 transition-all">{userData.name}!</span></h1>
+                    <h1 className="font-semibold">Welcome Back, <span className="hover:text-purple-800 transition-all">{userData.username}!</span></h1>
                     <div className="flex items-center">
                         <Flame className="w-4 h-4 text-orange-400 hover:text-orange-600 transition-all" />
                         <h3 className="text-gray-600 text-sm">{userData.streak} day streak!</h3>
@@ -24,33 +25,50 @@ const Header = () => (
 );
 
 
-const Card = ({title, description, status}) => {
+const Card = ({title, description, status, levelRequired, userLevel}) => {
+    
+    let disabled = userLevel < levelRequired;
+    const disabledStatusColor = 'bg-gray-200'
+    const disabledColor = 'text-gray-500'
+    const disabledBg = 'bg-gray-100'
+    const disabledHover = 'hover:bg-gray-200'
     const statusStyles = {
         purple: {
-            statusColor: 'bg-purple-00',
-            statusIconColor: 'text-purple-500',
-            cardColor: 'bg-purple-100',
-            hoverColor: 'hover:bg-purple-200',
+            statusColor: disabled ? disabledStatusColor : 'bg-purple-200',
+            statusIconColor: disabled ? disabledColor : 'text-purple-500',
+            cardColor: disabled ? disabledBg : 'bg-purple-100',
+            hoverColor: disabled ? disabledHover : 'hover:bg-purple-200',
         },
         green: {
-            statusColor: 'bg-green-100',
-            statusIconColor: 'text-green-500',
-            cardColor: 'bg-green-100',
-            hoverColor: 'hover:bg-green-200',
+            statusColor: disabled ? disabledStatusColor : 'bg-green-200',
+            statusIconColor: disabled ? disabledColor : 'text-green-500',
+            cardColor: disabled ? disabledBg : 'bg-green-100',
+            hoverColor: disabled ? disabledHover : 'hover:bg-green-200',
         },
         red: {
-            statusColor: 'bg-red-100',
-            statusIconColor: 'text-red-500',
-            cardColor: 'bg-red-100',
-            hoverColor: 'hover:bg-red-200',
+            statusColor: disabled ? disabledStatusColor : 'bg-red-200',
+            statusIconColor: disabled ? disabledColor : 'text-red-500',
+            cardColor: disabled ? disabledBg : 'bg-red-100',
+            hoverColor: disabled ? disabledHover : 'hover:bg-red-200',
         },
     };
 
     const colors = statusStyles[status];
 
+    const handleCardClick = () => {
+        if (!disabled) {
+            console.log('Card clicked!')
+        } else {
+            alert('You need to reach level ' + levelRequired + ' to unlock this lesson!')
+        }
+    }
+    
     return (
         <button className="w-full"
-            onClick={() => {console.log(title +'\n' + description)}}
+            // disabled={disabled}
+
+            onClick={handleCardClick}
+            
         >
             <div className={`flex items-center ${colors.cardColor} ${colors.hoverColor} 
                             shadow-lg rounded-lg p-4 my-2 transition-all duration-200 justify-between`}>
@@ -152,7 +170,7 @@ const WeeklyStats = () => (
     </div>
 );
 
-const LessonCards = () => (
+const LessonCards = ({ userData }) => (
     <div className="mb-6">
         <div className="flex justify-between">
             <h1 className="text-lg font-semibold text-gray-800 ml-1">Learn ASL</h1>
@@ -168,7 +186,9 @@ const LessonCards = () => (
                         key={index} 
                         title={card.title} 
                         description={card.description} 
-                        status={card.status} 
+                        status={card.status}
+                        levelRequired={card.levelRequired}
+                        userLevel={userData.level}
                     />
                 ))}
             
@@ -180,17 +200,20 @@ const cardData = [
     {
         title: 'Alphabets',
         description: 'Learn the ASL Alphabets through Fingerspelling.',
-        status: 'purple'
+        status: 'purple',
+        levelRequired: 1
     },
     {
         title: 'Numbers',
         description: 'Learn the ASL Numbers.',
-        status: 'green'
+        status: 'green',
+        levelRequired: 2
     },
     {
         title: 'Greetings',
         description: 'Learn Basic Greetings in ASL.',
-        status: 'red'
+        status: 'red',
+        levelRequired: 3
     },
 ]
 
@@ -219,14 +242,15 @@ const progressMetrics = {
 
 
 function HomeScreen () {
+    const userData = getUserData();
     return (
         <>
-            <Header />
+            <Header userData={userData} />
             <div className="max-w-screen-md w-full mx-auto px-3">
                 <ProgressOverview />
                 <QuickActions />
                 <UpcomingLesson />
-                <LessonCards />
+                <LessonCards userData={userData} />
                 <WeeklyStats />
             </div>
         </>

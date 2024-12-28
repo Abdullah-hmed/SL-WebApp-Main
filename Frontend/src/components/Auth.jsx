@@ -1,38 +1,16 @@
 import { useState } from 'react'
 import { EyeIcon, EyeOff } from 'lucide-react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { saveToken } from './utils/authUtils';
-import { isAuthenticated } from './utils/authUtils';
+import { 
+    saveToken, 
+    saveUserData, 
+    clearUserData, 
+    fetchUserData,
+    loginUser,
+    signupUser,
 
-const loginUser = async (formData) => {
-    const response = await fetch('http://localhost:5000/auth/login', {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-  
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.message);
-    
-    if (result.accessToken) {
-      saveToken(result.accessToken);
-      return { success: true, data: result };
-    }
-    return { success: false, error: "No token received", data: result };
-};
-  
-const signupUser = async (formData) => {
-    const response = await fetch('http://localhost:5000/auth/signup', {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-  
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.message);
-    
-    return { success: true, message: "Signup successful!", data: result };
-};
+} from './utils/authUtils';
+import { isAuthenticated } from './utils/authUtils';
 
 
 
