@@ -11,12 +11,16 @@ const supabase = createClient(
     process.env.SUPABASE_KEY
 );
 
-router.get('/flashcards/alphabets', async (req, res) => {
+router.get('/flashcards/:category', async (req, res) => {
     try {
+
+        const { category } = req.params;
+
         const {data, err} = await supabase
         .from('sign_flashcards')
         .select('*')
         .eq('status', 'unread')
+        .eq('sign_type', category)
         .order('sign_text', { ascending: true })
 
         if (err) {
