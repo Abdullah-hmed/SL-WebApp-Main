@@ -1,5 +1,7 @@
 import React from 'react';
-import { useState, Suspense} from 'react';
+import { useState, useEffect, Suspense} from 'react';
+import { getToken } from "./utils/authUtils";
+import { jwtDecode } from "jwt-decode";
 import { Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import HomeScreen from './Screens/Home.jsx';
 import LearnScreen from './Screens/Learn.jsx';
@@ -32,7 +34,7 @@ const TopBar = ({setActiveButton}) => (
 );
 
 const BottomButtons = [
-    { name: 'Home', path:'/', icon: Home },
+    { name: 'Home', path:'/home', icon: Home },
     { name: 'Learn', path:'/learn', icon: Book },
     { name: 'Quiz', path:'/quiz', icon: Gamepad },
     { name: 'Account', path:'/account', icon: User }
@@ -93,6 +95,8 @@ const BottomBar = ({activeButton, setActiveButton}) => {
 const Loading = () => (
     <h3>Loading...</h3>
 )
+
+
 
 
 function AppLayout () {
