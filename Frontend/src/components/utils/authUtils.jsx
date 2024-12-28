@@ -164,3 +164,19 @@ export const refreshUserData = async () => {
         console.error('No tokens present');
     }
 };
+
+export function getStoredUserData(key) {
+    const userData = localStorage.getItem('userData'); // Ensure the correct key is used
+    if (!userData) {
+        console.error('No user data found in local storage');
+        return null;
+    }
+
+    try {
+        const parsedData = JSON.parse(userData);
+        return parsedData[key] || null; // Return the value for the specified key
+    } catch (error) {
+        console.error('Failed to parse user data from local storage:', error);
+        return null;
+    }
+}

@@ -1,7 +1,5 @@
 import React from 'react';
 import { useState, useEffect, Suspense} from 'react';
-import { getToken } from "./utils/authUtils";
-import { jwtDecode } from "jwt-decode";
 import { Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import HomeScreen from './Screens/Home.jsx';
 import LearnScreen from './Screens/Learn.jsx';

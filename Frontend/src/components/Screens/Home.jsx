@@ -1,5 +1,6 @@
-import { CheckCircle, ChevronRight, Flame, Settings, Target, Calendar, Clock, Trophy } from "lucide-react"
+import { CheckCircle, ChevronRight, Flame, Settings, Target, Calendar, Clock, Trophy, LockKeyhole } from "lucide-react"
 import { Link } from "react-router-dom";
+import {toast, Toaster } from 'react-hot-toast';
 import { getUserData } from "../utils/authUtils";
 
 
@@ -25,7 +26,7 @@ const Header = ({ userData }) => (
 );
 
 
-const Card = ({title, description, status, levelRequired, userLevel}) => {
+const Card = ({title, description, status, url, levelRequired, userLevel}) => {
     
     let disabled = userLevel < levelRequired;
     const disabledStatusColor = 'bg-gray-200'
@@ -55,18 +56,18 @@ const Card = ({title, description, status, levelRequired, userLevel}) => {
 
     const colors = statusStyles[status];
 
-    const handleCardClick = () => {
+        const handleCardClick = () => {
         if (!disabled) {
-            console.log('Card clicked!')
+            // toast.success(`You unlocked ${title}!`);
         } else {
-            alert('You need to reach level ' + levelRequired + ' to unlock this lesson!')
+            toast.error(`You need to reach level ${levelRequired} to unlock this lesson!`);
         }
     }
     
     return (
-        <button className="w-full"
-            // disabled={disabled}
-
+        <Link  className={'w-full'}
+            to={ disabled ? null : '/learn' }
+            state={{category: url}}
             onClick={handleCardClick}
             
         >
@@ -74,16 +75,17 @@ const Card = ({title, description, status, levelRequired, userLevel}) => {
                             shadow-lg rounded-lg p-4 my-2 transition-all duration-200 justify-between`}>
                 <div className="flex items-center">
                     <div className={`${colors.statusColor} p-2 rounded-lg mr-3`}>
-                        <CheckCircle className={`w-auto h-9 ${colors.statusIconColor}`} />
+                        { disabled ? <LockKeyhole className={`w-auto h-9 ${colors.statusIconColor}`} /> :
+                                    <CheckCircle className={`w-auto h-9 ${colors.statusIconColor}`} />}
                     </div>
                     <div className='flex flex-col w-full text-left'>
                         <h2 className='text-2xl font-semibold mb-2'>{title}</h2>
                         <p className='text-gray-600 text-sm'>{description}</p>
                     </div>
                 </div>
-                <ChevronRight className='w-4 h-4 text-gray-600' />
+                
             </div>
-        </button>
+        </Link>
     )
 }
 
@@ -187,8 +189,10 @@ const LessonCards = ({ userData }) => (
                         title={card.title} 
                         description={card.description} 
                         status={card.status}
+                        url={card.url}
                         levelRequired={card.levelRequired}
                         userLevel={userData.level}
+                        
                     />
                 ))}
             
@@ -201,28 +205,24 @@ const cardData = [
         title: 'Alphabets',
         description: 'Learn the ASL Alphabets through Fingerspelling.',
         status: 'purple',
-        levelRequired: 1
+        url: 'alphabet',
+        levelRequired: 1,
     },
     {
         title: 'Numbers',
         description: 'Learn the ASL Numbers.',
         status: 'green',
-        levelRequired: 2
+        url: 'number',
+        levelRequired: 2,
     },
     {
         title: 'Greetings',
         description: 'Learn Basic Greetings in ASL.',
         status: 'red',
-        levelRequired: 3
+        url: 'greeting',
+        levelRequired: 3,
     },
 ]
-
-
-const userData = {
-    name: 'Diddy',
-    level: '69',
-    streak: '12'
-}
 
 
 const progressMetrics = {
