@@ -3,18 +3,20 @@ import { X } from 'lucide-react';
 import Webcam from 'react-webcam';
 import io from 'socket.io-client';
 
-const WebcamProcessor = ({isPracticing, setIsPracticing}) => {
+const WebcamProcessor = ({displayPreds = true, setParentPrediction, isPracticing, setIsPracticing}) => {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   const [prediction, setPrediction] = useState({ class: '', confidence: 0 });
   const [aspectRatio, setAspectRatio] = useState(0);
-  const [processedImageUrl, setProcessedImageUrl] = useState('');
+  
   const [isProcessing, setIsProcessing] = useState(false);
   const socketRef = useRef(null);
   
   const FRAME_DELAY = 500;
   const TARGET_WIDTH = 640;
   const TARGET_HEIGHT = 480;
+
+  
 
   useEffect(() => {
     // Initialize Socket.IO connection to localhost:3000
@@ -27,16 +29,16 @@ const WebcamProcessor = ({isPracticing, setIsPracticing}) => {
 
     // Handle incoming predictions
     socketRef.current.on('prediction', (data) => {
-      const { class: className, confidence, image: processedImageData } = data;
+      const { class: className, confidence } = data;
       
-      if (processedImageData) {
-        const arrayBuffer = new Uint8Array(processedImageData).buffer;
-        const blob = new Blob([arrayBuffer], { type: 'image/jpeg' });
-        const imageUrl = URL.createObjectURL(blob);
-        setProcessedImageUrl(imageUrl);
-      }
+      const newPrediction = { class: className, confidence };
+      
+      setPrediction(newPrediction);
+      
+      if(!!setParentPrediction){
+        setParentPrediction(newPrediction);
+      }      
 
-      setPrediction({ class: className, confidence });
       setIsProcessing(false);
       
       // Schedule next frame
@@ -134,17 +136,18 @@ const WebcamProcessor = ({isPracticing, setIsPracticing}) => {
           className="hidden"
         />
       </div>
-
-      <div className="space-y-2">
-        <div className="text-base">
-          Prediction:{' '}
-          <span className="text-green-600">{prediction.class}</span>
-          , Confidence:{' '}
-          <span className={prediction.confidence > 0.5 ? 'text-green-600' : 'text-red-600'}>
-            {(prediction.confidence * 100).toFixed(2)}%
-          </span>
+      {displayPreds && (
+        <div className="space-y-2">
+          <div className="text-base">
+            Prediction:{' '}
+            <span className="text-green-600">{prediction.class}</span>
+            , Confidence:{' '}
+            <span className={prediction.confidence > 0.5 ? 'text-green-600' : 'text-red-600'}>
+              {(prediction.confidence * 100).toFixed(2)}%
+            </span>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
