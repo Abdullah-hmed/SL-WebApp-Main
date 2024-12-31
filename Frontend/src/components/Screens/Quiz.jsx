@@ -74,48 +74,55 @@ const QuizScreen = () => {
     const [score, setScore] = useState(0);
     const [prediction, setPrediction] = useState({ class: '', confidence: 0 });
     const [totalWords, setTotalWords] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
       const fetchWords = async () => {
+        try{
           const response = await fetch(`http://localhost:5000/db/flashcards_quiz/alphabet`);
           const data = await response.json();
           setTotalWords(data);
           console.log(data);
+        } catch (error) {
+          console.error('Error fetching words:', error);
+        } finally {
+          setIsLoading(false);
+        }
       };
       fetchWords();
     }, []);
 
-    const questions = [
-    { word: "A", hint: "ASL Sign for A" },
-    { word: "B", hint: "ASL Sign for B" },
-    { word: "C", hint: "ASL Sign for C" },
-    { word: "D", hint: "ASL Sign for D" },
-    { word: "E", hint: "ASL Sign for E" },
-    { word: "F", hint: "ASL Sign for F" },
-    { word: "G", hint: "ASL Sign for G" },
-    { word: "H", hint: "ASL Sign for H" },
-    { word: "I", hint: "ASL Sign for I" },
-    { word: "J", hint: "ASL Sign for J" },
-    { word: "K", hint: "ASL Sign for K" },
-    { word: "L", hint: "ASL Sign for L" },
-    { word: "M", hint: "ASL Sign for M" },
-    { word: "N", hint: "ASL Sign for N" },
-    { word: "O", hint: "ASL Sign for O" },
-    { word: "P", hint: "ASL Sign for P" },
-    { word: "Q", hint: "ASL Sign for Q" },
-    { word: "R", hint: "ASL Sign for R" },
-    { word: "S", hint: "ASL Sign for S" },
-    { word: "T", hint: "ASL Sign for T" },
-    { word: "U", hint: "ASL Sign for U" },
-    { word: "V", hint: "ASL Sign for V" },
-    { word: "W", hint: "ASL Sign for W" },
-    { word: "X", hint: "ASL Sign for X" },
-    { word: "Y", hint: "ASL Sign for Y" },
-    { word: "Z", hint: "ASL Sign for Z" }
-    ];
+    // const questions = [
+    // { word: "A", hint: "ASL Sign for A" },
+    // { word: "B", hint: "ASL Sign for B" },
+    // { word: "C", hint: "ASL Sign for C" },
+    // { word: "D", hint: "ASL Sign for D" },
+    // { word: "E", hint: "ASL Sign for E" },
+    // { word: "F", hint: "ASL Sign for F" },
+    // { word: "G", hint: "ASL Sign for G" },
+    // { word: "H", hint: "ASL Sign for H" },
+    // { word: "I", hint: "ASL Sign for I" },
+    // { word: "J", hint: "ASL Sign for J" },
+    // { word: "K", hint: "ASL Sign for K" },
+    // { word: "L", hint: "ASL Sign for L" },
+    // { word: "M", hint: "ASL Sign for M" },
+    // { word: "N", hint: "ASL Sign for N" },
+    // { word: "O", hint: "ASL Sign for O" },
+    // { word: "P", hint: "ASL Sign for P" },
+    // { word: "Q", hint: "ASL Sign for Q" },
+    // { word: "R", hint: "ASL Sign for R" },
+    // { word: "S", hint: "ASL Sign for S" },
+    // { word: "T", hint: "ASL Sign for T" },
+    // { word: "U", hint: "ASL Sign for U" },
+    // { word: "V", hint: "ASL Sign for V" },
+    // { word: "W", hint: "ASL Sign for W" },
+    // { word: "X", hint: "ASL Sign for X" },
+    // { word: "Y", hint: "ASL Sign for Y" },
+    // { word: "Z", hint: "ASL Sign for Z" }
+    // ];
 
     useEffect(() => {
-        if (totalWords.length > 0 && prediction.class === totalWords[currentQuestion].sign_text && prediction.confidence > 0.8) {
+        if (!isLoading && prediction.class === totalWords[currentQuestion].sign_text && prediction.confidence > 0.8) {
             setScore((score + 1) % totalWords.length);
             setCurrentQuestion((currentQuestion + 1) % totalWords.length);
             reward();
@@ -128,7 +135,9 @@ const QuizScreen = () => {
         }
     }, [score]);
 
-    if(totalWords.length === 0) {
+
+    // If loading, display a spinner
+    if(isLoading) {
       return (
         <div className="h-screen flex items-center justify-center">
             <div className="text-center">
@@ -144,6 +153,18 @@ const QuizScreen = () => {
       );
     }
 
+    // if no words are returned, display a message
+    if(totalWords.length === 0) {
+        return (
+            <div className="h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <p className="text-2xl font-semibold text-purple-600">Nothing to study currently!</p>
+                </div>
+            </div>
+        );
+    }
+
+    // If some words are fetched, display the card for the signs
     return (
         <div className="min-h-screen bg-slate-50 p-4">
         <div className="max-w-screen-md mx-auto space-y-4">
