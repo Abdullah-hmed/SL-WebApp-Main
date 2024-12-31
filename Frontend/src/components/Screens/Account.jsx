@@ -14,7 +14,7 @@ function AccountScreen () {
     const userData = getUserData();
     
     return (
-        <div className='min-h-screen bg-gray-50 flex items-center justify-center p-4'>
+        <div className='min-h-screen bg-gray-50 flex items-center justify-center p-4 pb-20'>
             <div className='w-full max-w-md bg-white rounded-xl shadow-xl p-6'>
                 <UserCircle className="w-16 h-16 mx-auto text-purple-600" />
                 <h2 className="text-center font-semibold text-2xl text-gray-800">Account Information</h2>

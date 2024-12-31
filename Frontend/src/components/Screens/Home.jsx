@@ -248,7 +248,7 @@ function HomeScreen () {
     return (
         <>
             <Header userData={userData} />
-            <div className="max-w-screen-md w-full mx-auto px-3">
+            <div className="max-w-screen-md w-full mx-auto px-3 pb-20">
                 <ProgressOverview />
                 <QuickActions />
                 <UpcomingLesson />
