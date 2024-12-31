@@ -33,6 +33,24 @@ router.get('/flashcards/:category', async (req, res) => {
     }
 })
 
+router.post('/flashcards_read', async (req, res) => {
+    const { sign_id } = req.body;
+
+    try {
+        const {data, err} = await supabase
+        .from('sign_flashcards')
+        .update({status: 'read'})
+        .eq('id', sign_id)
+
+        if (err) {
+            console.error(err);
+        } else {
+            res.status(200).json(data);
+        }
+    } catch (err) {
+        res.status(500).json({error: err.message});
+    }
+})
 
 
 export default router;
