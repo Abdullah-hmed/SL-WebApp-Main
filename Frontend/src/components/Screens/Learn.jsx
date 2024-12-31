@@ -206,8 +206,9 @@ function LearnScreen () {
         setContentLoading(true);
         setWord((word + 1) % totalWords.length);
         
-        markAsRead(totalWords[word].id);
-        console.log('Marking as read:', totalWords[word].id, ' Alphabet: ', totalWords[word].sign_text);
+        // Uncomment to mark as read
+        // markAsRead(totalWords[word].id);
+        // console.log('Marking as read:', totalWords[word].id, ' Alphabet: ', totalWords[word].sign_text);
     }
 
     const handleContentLoaded = () => {
