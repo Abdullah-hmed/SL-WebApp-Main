@@ -69,21 +69,6 @@ const BottomIcons = () => {
     );
 };
 
-const chooseComponent = (activeButton) => {
-    switch (activeButton) {
-        case 'Home':
-            return <HomeScreen />;
-        case 'Learn':
-            return <LearnScreen />;
-        case 'Quiz':
-            return <QuizScreen />;
-        case 'Account':
-            return <AccountScreen />;
-        default:
-            return null;
-    }
-};
-
 const BottomBar = ({activeButton, setActiveButton}) => {
     return (
     <BottomIcons activeButton={activeButton} setActiveButton={setActiveButton} />
