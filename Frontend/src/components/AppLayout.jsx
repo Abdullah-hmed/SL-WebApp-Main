@@ -87,7 +87,7 @@ function AppLayout () {
     
 
     return (
-        <div className="h-full bg-gradient-to-b from-blue-50 to-purple-50 pb-20 
+        <div className="h-full bg-gradient-to-b from-blue-50 to-purple-50 
                         select-none">
             <Suspense fallback={<Loading />}>
                 <PageTransition>
