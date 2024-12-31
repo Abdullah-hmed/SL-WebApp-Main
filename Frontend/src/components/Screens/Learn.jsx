@@ -118,6 +118,7 @@ function LearnScreen () {
     const [contentLoading, setContentLoading] = useState(false);
     const [activeTab, setActiveTab] = useState('image');
     const [prediction, setPrediction] = useState({ class: '', confidence: 0 });
+    const [isLoading, setIsLoading] = useState(true);
     const userLevel = getUserData().level;
 
     const location = useLocation();
@@ -132,11 +133,16 @@ function LearnScreen () {
     useEffect(() => {
         if(category) {
             const fetchWords = async () => {
-                const response = await fetch(`http://localhost:5000/db/flashcards_learn/${category}`);
-                const data = await response.json();
-                setTotalWords(data);
+                try {
+                    const response = await fetch(`http://localhost:5000/db/flashcards_learn/${category}`);
+                    const data = await response.json();
+                    setTotalWords(data);
+                } catch (error) {
+                    console.error('Error fetching words:', error);
+                } finally {
+                    setIsLoading(false);
+                }
             };
-            
             fetchWords();
         }
     }, [category]);
@@ -185,7 +191,7 @@ function LearnScreen () {
     }
 
     // Loading the content
-    if (totalWords.length === 0) {
+    if (isLoading) {
         return (
             <div className="h-screen flex items-center justify-center">
                 <div className="text-center">
@@ -199,6 +205,16 @@ function LearnScreen () {
                 </div>
             </div>
         )
+    }
+
+    if (totalWords.length === 0) {
+        return (
+            <div className="h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <p className="text-2xl font-semibold text-purple-600">Lesson Complete!</p>
+                </div>
+            </div>
+        );
     }
     
 
