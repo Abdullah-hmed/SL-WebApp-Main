@@ -132,7 +132,7 @@ function LearnScreen () {
     useEffect(() => {
         if(category) {
             const fetchWords = async () => {
-                const response = await fetch(`http://localhost:5000/db/flashcards/${category}`);
+                const response = await fetch(`http://localhost:5000/db/flashcards_learn/${category}`);
                 const data = await response.json();
                 setTotalWords(data);
             };
@@ -207,8 +207,8 @@ function LearnScreen () {
         setWord((word + 1) % totalWords.length);
         
         // Uncomment to mark as read
-        // markAsRead(totalWords[word].id);
-        // console.log('Marking as read:', totalWords[word].id, ' Alphabet: ', totalWords[word].sign_text);
+        markAsRead(totalWords[word].id);
+        console.log('Marking as read:', totalWords[word].id, ' Alphabet: ', totalWords[word].sign_text);
     }
 
     const handleContentLoaded = () => {
