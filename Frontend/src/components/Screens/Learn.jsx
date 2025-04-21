@@ -101,13 +101,29 @@ const cardData = [
 ]
 
 const markAsRead = async (id) => {
-    const response = await fetch(`http://localhost:5000/db/flashcards_read/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ "sign_id": id }),
-    });
+    try {
+        const response = await fetch('http://localhost:5000/db/flashcards_read/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                sign_id: id, 
+                userId: getUserData().id
+            }),
+        });
+        
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "Failed to mark as read");
+        }
+
+        console.log("Success:", result);
+        return result;
+
+    } catch (error) {
+        console.error("Error marking as read:", error);
+        throw error;
+    }
 };
 
 function LearnScreen () {
@@ -120,10 +136,9 @@ function LearnScreen () {
     const [prediction, setPrediction] = useState({ class: '', confidence: 0 });
     const [isLoading, setIsLoading] = useState(true);
     const userLevel = getUserData().level;
-
+    const userId = getUserData().id;
     const location = useLocation();
-    const category = location.state?.category;
-
+    const category = location.state?.category || 'alphabet';
     const handlePrediction = (newPrediction) => {
         setPrediction(newPrediction);
         console.log('New Prediction:', newPrediction);
@@ -134,8 +149,16 @@ function LearnScreen () {
         if(category) {
             const fetchWords = async () => {
                 try {
-                    const response = await fetch(`http://localhost:5000/db/flashcards_learn/${category}`);
+                    const response = await fetch(`http://localhost:5000/db/flashcards_learn/`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            userId: getUserData().id, 
+                            category: category 
+                        }),
+                    });
                     const data = await response.json();
+                    console.log(data);
                     setTotalWords(data);
                 } catch (error) {
                     console.error('Error fetching words:', error);
@@ -223,7 +246,7 @@ function LearnScreen () {
         setWord((word + 1) % totalWords.length);
         
         // Uncomment to mark as read
-        // markAsRead(totalWords[word].id);
+        markAsRead(totalWords[word].id);
         console.log('Marking as read:', totalWords[word].id, ' Alphabet: ', totalWords[word].sign_text);
     }
 

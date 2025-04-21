@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Camera, HelpCircle } from 'lucide-react';
 import { useReward } from 'react-rewards';
 import WebcamProcessor from '../WebcamProcessor';
+import { getUserData } from '../utils/authUtils';
 const ProgressIndicator = ({ currentQuestion, totalWords, score }) => (
     <div className="flex justify-between items-center text-sm text-slate-600">
         <span>Question {currentQuestion + 1} of {totalWords.length}</span>
@@ -15,7 +16,7 @@ const QuizCard = ({ isRecording, setIsRecording, currentQuestion, totalWords, pr
             <h2 className="text-xl text-center">
               Show the sign for:
               <span className="block text-3xl font-bold mt-2 text-purple-600 transition-all duration-1000">
-                {totalWords[currentQuestion].sign_text}
+                {totalWords[currentQuestion].sign_flashcards.sign_text}
               </span>
             </h2>
           </div>
@@ -52,6 +53,36 @@ const QuizCard = ({ isRecording, setIsRecording, currentQuestion, totalWords, pr
         </div>
 )
 
+const leitnerBoxMapping = {
+    1: 1,
+    2: 4,
+    3: 7,
+    4: 14,
+    5: 30,
+};
+
+const updateFlashcard = async (signId, boxLevel, userId) => {
+  const newBoxLevel = boxLevel+1
+  console.log(`Updating sign ${signId}'s box to: `, newBoxLevel)
+  try {
+    const response = await fetch('http://localhost:5000/db/update_flashcards', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        sign_id: signId, 
+        box_level: newBoxLevel, 
+        user_id: userId 
+      }),
+    });
+
+    const json = await response.json();
+    if (!response.ok) {
+      console.log(json.error);
+    }
+  } catch (err) {
+    console.log(err.message);
+  }
+};
 
 const QuizScreen = () => {
 
@@ -78,8 +109,15 @@ const QuizScreen = () => {
 
     useEffect(() => {
       const fetchWords = async () => {
-        try{
-          const response = await fetch(`http://localhost:5000/db/flashcards_quiz/alphabet`);
+        try {
+          const response = await fetch(`http://localhost:5000/db/flashcards_quiz/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              category: 'alphabet',
+              userId: getUserData().id
+            }),
+          });
           const data = await response.json();
           setTotalWords(data);
           console.log(data);
@@ -92,40 +130,13 @@ const QuizScreen = () => {
       fetchWords();
     }, []);
 
-    // const questions = [
-    // { word: "A", hint: "ASL Sign for A" },
-    // { word: "B", hint: "ASL Sign for B" },
-    // { word: "C", hint: "ASL Sign for C" },
-    // { word: "D", hint: "ASL Sign for D" },
-    // { word: "E", hint: "ASL Sign for E" },
-    // { word: "F", hint: "ASL Sign for F" },
-    // { word: "G", hint: "ASL Sign for G" },
-    // { word: "H", hint: "ASL Sign for H" },
-    // { word: "I", hint: "ASL Sign for I" },
-    // { word: "J", hint: "ASL Sign for J" },
-    // { word: "K", hint: "ASL Sign for K" },
-    // { word: "L", hint: "ASL Sign for L" },
-    // { word: "M", hint: "ASL Sign for M" },
-    // { word: "N", hint: "ASL Sign for N" },
-    // { word: "O", hint: "ASL Sign for O" },
-    // { word: "P", hint: "ASL Sign for P" },
-    // { word: "Q", hint: "ASL Sign for Q" },
-    // { word: "R", hint: "ASL Sign for R" },
-    // { word: "S", hint: "ASL Sign for S" },
-    // { word: "T", hint: "ASL Sign for T" },
-    // { word: "U", hint: "ASL Sign for U" },
-    // { word: "V", hint: "ASL Sign for V" },
-    // { word: "W", hint: "ASL Sign for W" },
-    // { word: "X", hint: "ASL Sign for X" },
-    // { word: "Y", hint: "ASL Sign for Y" },
-    // { word: "Z", hint: "ASL Sign for Z" }
-    // ];
 
     useEffect(() => {
-        if (!isLoading && prediction.class === totalWords[currentQuestion].sign_text && prediction.confidence > 0.8) {
+        if (!isLoading && prediction.class === totalWords[currentQuestion].sign_flashcards.sign_text && prediction.confidence > 0.8) {
             setScore((score + 1) % totalWords.length);
             setCurrentQuestion((currentQuestion + 1) % totalWords.length);
             reward();
+            updateFlashcard(totalWords[currentQuestion].flashcard_id, totalWords[currentQuestion].box_level, getUserData().id)
         }
     }, [prediction]);
 
