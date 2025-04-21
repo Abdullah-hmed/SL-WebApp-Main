@@ -223,7 +223,7 @@ function LearnScreen () {
         setWord((word + 1) % totalWords.length);
         
         // Uncomment to mark as read
-        markAsRead(totalWords[word].id);
+        // markAsRead(totalWords[word].id);
         console.log('Marking as read:', totalWords[word].id, ' Alphabet: ', totalWords[word].sign_text);
     }
 
