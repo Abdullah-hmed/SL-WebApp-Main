@@ -73,8 +73,8 @@ router.post('/flashcards_quiz', async (req, res) => {
             sign_text,
             sign_description
             )
-        `);
-
+        `)
+        .eq('user_id', userId);
         if (error) {
         console.error('Error fetching flashcards:', error);
         } else {
