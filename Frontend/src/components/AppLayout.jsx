@@ -1,8 +1,8 @@
 import React from 'react';
 import { useState } from 'react';
-import Learn from './Learn.jsx';
-import Quiz from './Quiz.jsx';
-import Account from './Account.jsx';
+import Learn from './Screens/Learn.jsx';
+import Quiz from './Screens/Quiz.jsx';
+import Account from './Screens/Account.jsx';
 import { 
   Flame, 
   Heart,
@@ -10,6 +10,7 @@ import {
   Book,
   Gamepad,
   User,
+  Home,
   CheckCircle,
   Lock,
   Crown,
@@ -18,18 +19,25 @@ import {
   HandHeart
 } from 'lucide-react';
 
-const TopBar = () => (
+const TopBar = ({setActiveButton}) => (
     <div className="bg-white shadow-md">
         <div className="max-w-lg mx-auto px-4 py-3">
             <div className="flex justify-center">
-                <HandHeart className='w-8 h-8 mr-2 text-indigo-500' />
-                <button className="font-bold text-xl text-indigo-500">SignLingo</button>
+                
+                <button 
+                    className="flex items-center font-bold text-xl text-purple-500"
+                    onClick={() => setActiveButton('Home')}
+                >
+                    <HandHeart className='w-8 h-8 mr-2' />
+                    SignLingo
+                </button>
             </div>
         </div>
     </div>
 );
 
 const BottomButtons = [
+    { name: 'Home', icon: Home },
     { name: 'Learn', icon: Book },
     { name: 'Quiz', icon: Gamepad },
     { name: 'Account', icon: User }
@@ -80,8 +88,6 @@ const chooseComponent = (activeButton) => {
 };
 
 const BottomBar = ({activeButton, setActiveButton}) => {
-    
-    
     return (
         <div className="flex justify-center">
             <BottomIcons activeButton={activeButton} setActiveButton={setActiveButton} />
@@ -89,12 +95,12 @@ const BottomBar = ({activeButton, setActiveButton}) => {
 )};
 
 
-const AppLayout = () => {
+function AppLayout () {
     const [activeButton, setActiveButton] = useState('Learn');
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 pb-20">
-            <TopBar />
+        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 pb-20 select-none">
+            <TopBar setActiveButton={setActiveButton} />
             {chooseComponent(activeButton)}
             <BottomBar activeButton={activeButton} setActiveButton={setActiveButton} />
         </div>
