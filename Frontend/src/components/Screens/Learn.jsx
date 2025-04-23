@@ -100,6 +100,16 @@ const cardData = [
     },
 ]
 
+const markAsRead = async (id) => {
+    const response = await fetch(`http://localhost:5000/db/flashcards_read/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ "sign_id": id }),
+    });
+};
+
 function LearnScreen () {
 
     const [word, setWord] = useState(0);
@@ -195,6 +205,9 @@ function LearnScreen () {
     const handleContentLoading = () => {
         setContentLoading(true);
         setWord((word + 1) % totalWords.length);
+        
+        markAsRead(totalWords[word].id);
+        console.log('Marking as read:', totalWords[word].id, ' Alphabet: ', totalWords[word].sign_text);
     }
 
     const handleContentLoaded = () => {
