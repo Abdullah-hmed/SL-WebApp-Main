@@ -102,7 +102,7 @@ function AppLayout () {
     
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 pb-20 
+        <div className="h-screen bg-gradient-to-b from-blue-50 to-purple-50 pb-20 
                         select-none">
             <Suspense fallback={<Loading />}>
                 <PageTransition>

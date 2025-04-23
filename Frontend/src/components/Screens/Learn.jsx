@@ -107,11 +107,17 @@ function LearnScreen () {
     const [isPracticing, setIsPracticing] = useState(false);
     const [contentLoading, setContentLoading] = useState(false);
     const [activeTab, setActiveTab] = useState('image');
-
+    const [prediction, setPrediction] = useState({ class: '', confidence: 0 });
     const userLevel = getUserData().level;
 
     const location = useLocation();
     const category = location.state?.category;
+
+    const handlePrediction = (newPrediction) => {
+        setPrediction(newPrediction);
+        console.log('New Prediction:', newPrediction);
+    };
+    
     
     useEffect(() => {
         if(category) {
@@ -136,7 +142,7 @@ function LearnScreen () {
         return (
             <div className="h-screen flex flex-col items-center justify-center">
                 <h1 className="text-xl font-semibold mb-5">Choose a Lesson</h1>
-                <div className="flex gap-4">
+                <div className="flex flex-col gap-4">
                     {cardData.map((card, index) => (
                         
                         <Link
@@ -146,7 +152,7 @@ function LearnScreen () {
                             state={{category: card.url}}
                             className="px-8 py-4 bg-purple-600 text-white rounded shadow hover:bg-purple-700 transition-all"
                         >
-                            <div className="">
+                            <div className="text-center">
                             {
                                 userLevel < card.levelRequired ? (
                                     <div className="flex items-center">
@@ -206,7 +212,13 @@ function LearnScreen () {
                             aspect-[600/400] mx-auto bg-white shadow-xl rounded-lg'>
                 <Tabs activeTab={activeTab} setActiveTab={setActiveTab} isPracticing={isPracticing} />
                 {isPracticing ? (
-                    <WebcamProcessor isPracticing={isPracticing} setIsPracticing={setIsPracticing} />
+                    <>
+                        <WebcamProcessor 
+                            setParentPrediction={setPrediction}
+                            isPracticing={isPracticing} 
+                            setIsPracticing={setIsPracticing} 
+                        />
+                    </>
                 ) : (activeTab === 'video' ? (
                             
                             <video
