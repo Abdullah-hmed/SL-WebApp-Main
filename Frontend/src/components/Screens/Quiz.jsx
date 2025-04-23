@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Camera, HelpCircle, Info } from 'lucide-react';
+import { Camera, HelpCircle } from 'lucide-react';
+import { useReward } from 'react-rewards';
 import WebcamProcessor from '../WebcamProcessor';
-
 const ProgressIndicator = ({ currentQuestion, questions, score }) => (
     <div className="flex justify-between items-center text-sm text-slate-600">
         <span>Question {currentQuestion + 1} of {questions.length}</span>
@@ -38,8 +38,9 @@ const QuizCard = ({ isRecording, setIsRecording, currentQuestion, questions, pre
 
             {/* Controls */}
             <button
-              onClick={() => setIsRecording(!isRecording)}
-              className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
+                id='finalRewardId'
+                onClick={() => setIsRecording(!isRecording)}
+                className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
                 isRecording 
                   ? 'bg-red-500 text-white hover:bg-red-600'
                   : 'bg-purple-500 text-white hover:bg-purple-600'
@@ -53,11 +54,26 @@ const QuizCard = ({ isRecording, setIsRecording, currentQuestion, questions, pre
 
 
 const QuizScreen = () => {
-  const [isRecording, setIsRecording] = useState(false);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [score, setScore] = useState(0);
-  const [prediction, setPrediction] = useState({ class: '', confidence: 0 });
-  const questions = [
+
+    const { reward, isAnimating} = useReward('rewardId', 'confetti', {
+        emoji: ['🎉', '✨'],
+        elementCount: 20,
+        spread: 30,
+        lifetime: 100
+    });
+
+    const { reward: finalReward, isAnimating: isAnimatingFinalReward } = useReward('finalRewardId', 'emoji', {
+        emoji: ['🎉', '✨'],
+        elementCount: 20,
+        spread: 10,
+        lifetime: 100
+    });
+    
+    const [isRecording, setIsRecording] = useState(false);
+    const [currentQuestion, setCurrentQuestion] = useState(0);
+    const [score, setScore] = useState(0);
+    const [prediction, setPrediction] = useState({ class: '', confidence: 0 });
+    const questions = [
     { word: "A", hint: "ASL Sign for A" },
     { word: "B", hint: "ASL Sign for B" },
     { word: "C", hint: "ASL Sign for C" },
@@ -84,32 +100,39 @@ const QuizScreen = () => {
     { word: "X", hint: "ASL Sign for X" },
     { word: "Y", hint: "ASL Sign for Y" },
     { word: "Z", hint: "ASL Sign for Z" }
-  ];
+    ];
 
-  useEffect(() => {
-    if (prediction.class === questions[currentQuestion].word && prediction.confidence > 0.9) {
-      setScore(score + 1);
-      setCurrentQuestion((currentQuestion + 1) % questions.length);
-    }
-  }, [prediction]);
+    useEffect(() => {
+        if (prediction.class === questions[currentQuestion].word && prediction.confidence > 0.8) {
+            setScore((score + 1) % questions.length);
+            setCurrentQuestion((currentQuestion + 1) % questions.length);
+            reward();
+        }
+    }, [prediction]);
 
-  return (
-    <div className="min-h-screen bg-slate-50 p-4">
-      <div className="max-w-screen-md mx-auto space-y-4">
-        
-        <ProgressIndicator currentQuestion={currentQuestion} questions={questions} score={score} />
+    useEffect(() => {
+        if(score === (questions.length - 1)) {
+            finalReward();
+        }
+    }, [score]);
 
-        {/* Main quiz card */}
-        <QuizCard isRecording={isRecording} setIsRecording={setIsRecording} currentQuestion={currentQuestion} questions={questions} prediction={prediction} setPrediction={setPrediction} />
+    return (
+        <div className="min-h-screen bg-slate-50 p-4">
+        <div className="max-w-screen-md mx-auto space-y-4">
+            
+            <ProgressIndicator currentQuestion={currentQuestion} questions={questions} score={score} />
 
-        {/* Help text */}
-        <div className="flex items-center justify-center gap-2 text-sm text-center text-slate-500">
-          <HelpCircle className="w-4 h-4" />
-          <p>Position yourself in frame and make sure you're in a well-lit area</p>
+            {/* Main quiz card */}
+            <QuizCard isRecording={isRecording} setIsRecording={setIsRecording} currentQuestion={currentQuestion} questions={questions} prediction={prediction} setPrediction={setPrediction} />
+
+            {/* Help text */}
+            <div id='rewardId' className="flex items-center justify-center gap-2 text-sm text-center text-slate-500">
+            <HelpCircle className="w-4 h-4" />
+            <p>Position yourself in frame and make sure you're in a well-lit area</p>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+        </div>
+    );
 };
 
 export default QuizScreen;
