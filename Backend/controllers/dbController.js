@@ -20,7 +20,6 @@ router.get('/flashcards_learn/:category', async (req, res) => {
         const {data, err} = await supabase
         .from('sign_flashcards')
         .select('*')
-        .eq('status', 'unread')
         .eq('sign_type', category)
         .order('sign_text', { ascending: true })
 
@@ -42,7 +41,6 @@ router.get('/flashcards_quiz/:category', async (req, res) => {
         const {data, err} = await supabase
         .from('sign_flashcards')
         .select('*')
-        .eq('status', 'read')
         .eq('sign_type', category)
         .order('sign_text', { ascending: true })
 
