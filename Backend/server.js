@@ -9,7 +9,7 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:5173'],
+    origin: ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000'],
     credentials: true
 }));
 
@@ -19,23 +19,23 @@ app.use('/auth', authRoutes);
 
 app.use('/db', dbRoutes);
 
-app.get('/proxy-video/:letter', async (req, res) => {
-    const letter = req.params.letter.toLowerCase();
-    const url = `https://www.handspeak.com/word/${letter}/${letter}-abc.mp4`;
+// app.get('/proxy-video/:letter', async (req, res) => {
+//     const letter = req.params.letter.toLowerCase();
+//     const url = `https://www.handspeak.com/word/${letter}/${letter}-abc.mp4`;
     
-    try {
-        const response = await fetch(url);
-        const buffer = await response.arrayBuffer();
+//     try {
+//         const response = await fetch(url);
+//         const buffer = await response.arrayBuffer();
         
-        // Set appropriate headers
-        res.setHeader('Content-Type', 'video/mp4');
-        res.setHeader('Access-Control-Allow-Origin', '*');
+//         // Set appropriate headers
+//         res.setHeader('Content-Type', 'video/mp4');
+//         res.setHeader('Access-Control-Allow-Origin', '*');
         
-        res.send(Buffer.from(buffer));
-    } catch (error) {
-        res.status(500).send('Error fetching video');
-    }
-});
+//         res.send(Buffer.from(buffer));
+//     } catch (error) {
+//         res.status(500).send('Error fetching video');
+//     }
+// });
 
 
 app.listen(process.env.PORT, () => {

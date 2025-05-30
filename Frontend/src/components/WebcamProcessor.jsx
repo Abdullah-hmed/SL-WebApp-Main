@@ -19,8 +19,8 @@ const WebcamProcessor = ({displayPreds = true, setParentPrediction, isPracticing
   
 
   useEffect(() => {
-    // Initialize Socket.IO connection to localhost:3000
-    socketRef.current = io('http://localhost:3000', {
+    // Initialize Socket.IO connection to 127.0.0.1:3000
+    socketRef.current = io('http://127.0.0.1:3000', {
       transports: ['websocket'],
       cors: {
         origin: '*'

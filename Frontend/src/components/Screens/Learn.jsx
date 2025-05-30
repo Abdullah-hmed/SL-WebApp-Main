@@ -278,7 +278,7 @@ function LearnScreen () {
                                 id="word-video"
                                 className={`w-full h-full rounded-lg transition-opacity duration-300`}
                                 crossOrigin='anonymous'
-                                src={totalWords[word].video_url}
+                                src={`https://dquwhuppqjgqqkkneohc.supabase.co/storage/v1/object/public/alphabet-videos/${totalWords[word].video_url}.mp4`}
                                 onClick={(e) => e.target.paused ? e.target.play() : e.target.pause()}
                                 preload='auto'
                                 autoPlay
@@ -294,7 +294,7 @@ function LearnScreen () {
                                     transition-opacity duration-300 ${contentLoading ? 'opacity-0' : 'opacity-100'}`}
                                 onLoad={handleContentLoaded}
                                 referrerPolicy='no-referrer'
-                                src={totalWords[word].image_url} 
+                                src={`https://dquwhuppqjgqqkkneohc.supabase.co/storage/v1/object/public/alphabet-pics/${totalWords[word].video_url}.gif`} 
                                 alt="word"
                             />
                         )
