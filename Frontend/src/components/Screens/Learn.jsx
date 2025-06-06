@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { ArrowRightIcon, Camera, ImageIcon, PlayIcon, LockKeyhole } from 'lucide-react';
 import WebcamProcessor from '../WebcamProcessor';
+import WordWebcamProcessor from '../WordWebcamProcessor';
 import { useLocation } from 'react-router-dom';
 import { getUserData } from '../utils/authUtils';
 
@@ -85,18 +86,11 @@ const cardData = [
         levelRequired: 1,
     },
     {
-        title: 'Numbers',
-        description: 'Learn the ASL Numbers.',
-        status: 'green',
-        url: 'number',
-        levelRequired: 2,
-    },
-    {
-        title: 'Greetings',
-        description: 'Learn Basic Greetings in ASL.',
+        title: 'Words',
+        description: 'Learn Basic Words in ASL.',
         status: 'red',
-        url: 'greeting',
-        levelRequired: 3,
+        url: 'word',
+        levelRequired: 2,
     },
 ]
 
@@ -138,7 +132,7 @@ function LearnScreen () {
     const userLevel = getUserData().level;
     const userId = getUserData().id;
     const location = useLocation();
-    const category = location.state?.category || 'alphabet';
+    const category = location.state?.category || ''; // Default to 'alphabet' if no category is provided, DEFINES FALLBACK CATEGORY
     const handlePrediction = (newPrediction) => {
         setPrediction(newPrediction);
         console.log('New Prediction:', newPrediction);
@@ -154,7 +148,7 @@ function LearnScreen () {
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
                             userId: getUserData().id, 
-                            category: category 
+                            category: category
                         }),
                     });
                     const data = await response.json();
@@ -266,11 +260,19 @@ function LearnScreen () {
                 <Tabs activeTab={activeTab} setActiveTab={setActiveTab} isPracticing={isPracticing} />
                 {isPracticing ? (
                     <>
-                        <WebcamProcessor 
-                            setParentPrediction={setPrediction}
-                            isPracticing={isPracticing} 
-                            setIsPracticing={setIsPracticing} 
-                        />
+                        {category === 'alphabet' ? (
+                            <WebcamProcessor 
+                                setParentPrediction={setPrediction}
+                                isPracticing={isPracticing} 
+                                setIsPracticing={setIsPracticing} 
+                            />
+                        ) : (
+                            <WordWebcamProcessor 
+                                setParentPrediction={setPrediction}
+                                isPracticing={isPracticing} 
+                                setIsPracticing={setIsPracticing} 
+                            />
+                        )}
                     </>
                 ) : (activeTab === 'video' ? (
                             
@@ -278,7 +280,7 @@ function LearnScreen () {
                                 id="word-video"
                                 className={`w-full h-full rounded-lg transition-opacity duration-300`}
                                 crossOrigin='anonymous'
-                                src={`https://dquwhuppqjgqqkkneohc.supabase.co/storage/v1/object/public/alphabet-videos/${totalWords[word].video_url}.mp4`}
+                                src={`https://dquwhuppqjgqqkkneohc.supabase.co/storage/v1/object/public/alphabet-videos/${totalWords[word].video_url.replace(/\.[^/.]+$/, '')}.mp4`}
                                 onClick={(e) => e.target.paused ? e.target.play() : e.target.pause()}
                                 preload='auto'
                                 autoPlay
@@ -294,7 +296,7 @@ function LearnScreen () {
                                     transition-opacity duration-300 ${contentLoading ? 'opacity-0' : 'opacity-100'}`}
                                 onLoad={handleContentLoaded}
                                 referrerPolicy='no-referrer'
-                                src={`https://dquwhuppqjgqqkkneohc.supabase.co/storage/v1/object/public/alphabet-pics/${totalWords[word].video_url}.gif`} 
+                                src={`https://dquwhuppqjgqqkkneohc.supabase.co/storage/v1/object/public/alphabet-pics/${totalWords[word].video_url}`} 
                                 alt="word"
                             />
                         )

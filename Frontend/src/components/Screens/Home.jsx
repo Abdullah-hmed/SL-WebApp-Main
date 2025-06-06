@@ -211,18 +211,11 @@ const cardData = [
         levelRequired: 1,
     },
     {
-        title: 'Numbers',
-        description: 'Learn the ASL Numbers.',
-        status: 'green',
-        url: 'number',
-        levelRequired: 2,
-    },
-    {
-        title: 'Greetings',
-        description: 'Learn Basic Greetings in ASL.',
+        title: 'Words',
+        description: 'Learn Basic Words in ASL.',
         status: 'red',
-        url: 'greeting',
-        levelRequired: 3,
+        url: 'word',
+        levelRequired: 2,
     },
 ]
 

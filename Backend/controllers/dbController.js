@@ -71,6 +71,7 @@ router.post('/flashcards_quiz', async (req, res) => {
             box_level,
             sign_flashcards (
             sign_text,
+            sign_type,
             sign_description
             )
         `)
@@ -103,10 +104,10 @@ router.post('/update_flashcards', async (req, res) => {
 
         const { data, error } = await supabase
         .rpc('update_flashcard_review', {
-            user_uuid: user_id,
             flashcard_id_input: sign_id,
             new_box_level: box_level,
-            next_review_day: leitnerBoxMapping[box_level]
+            next_review_day: leitnerBoxMapping[box_level],
+            user_uuid: user_id,
         });
 
         if (error) {

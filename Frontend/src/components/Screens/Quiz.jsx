@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Camera } from 'lucide-react';
 import { useReward } from 'react-rewards';
 import WebcamProcessor from '../WebcamProcessor';
+import WordWebcamProcessor from '../WordWebcamProcessor';
 import { getUserData } from '../utils/authUtils';
 
 /** Progress Indicator */
@@ -44,8 +45,32 @@ const handleCantRemember = async ({ score, setScore, currentIndex, setCurrentInd
   await updateFlashcard(totalWords[currentIndex].flashcard_id, 1, getUserData().id);
 };
 
+/** Dynamic Webcam Processor Component */
+const DynamicWebcamProcessor = ({ signType, displayPreds, setParentPrediction, isPracticing, setIsPracticing }) => {
+  if (signType === 'word') {
+    return (
+      <WordWebcamProcessor
+        displayPreds={displayPreds}
+        setParentPrediction={setParentPrediction}
+        isPracticing={isPracticing}
+        setIsPracticing={setIsPracticing}
+      />
+    );
+  }
+  
+  // Default to alphabet processor
+  return (
+    <WebcamProcessor
+      displayPreds={displayPreds}
+      setParentPrediction={setParentPrediction}
+      isPracticing={isPracticing}
+      setIsPracticing={setIsPracticing}
+    />
+  );
+};
+
 /** Webcam Card */
-const WebcamCard = ({ isRecording, setIsRecording, prediction, setPrediction }) => (
+const WebcamCard = ({ isRecording, setIsRecording, prediction, setPrediction, signType }) => (
   <div
     className="aspect-[600/400] bg-slate-100 rounded-lg flex items-center justify-center cursor-pointer"
     onClick={() => setIsRecording(!isRecording)}
@@ -54,16 +79,25 @@ const WebcamCard = ({ isRecording, setIsRecording, prediction, setPrediction }) 
       <div className="text-center text-slate-500">
         <Camera className="w-12 h-12 mx-auto mb-2 text-purple-400" />
         <p>Tap to start recording</p>
+        <p className="text-xs mt-1 text-slate-400">
+          {signType === 'word' ? 'Word Sign Detection' : 'Alphabet Sign Detection'}
+        </p>
       </div>
     ) : (
       <div className="flex flex-col items-center">
-        <WebcamProcessor
+        <DynamicWebcamProcessor
+          signType={signType}
           displayPreds={false}
           setParentPrediction={setPrediction}
           isPracticing={isRecording}
           setIsPracticing={setIsRecording}
         />
-        <div className="text-center">{`${prediction.class} (${(prediction.confidence * 100).toFixed(2)}%)`}</div>
+        <div className="text-center">
+          {`${prediction.class} (${(prediction.confidence * 100).toFixed(2)}%)`}
+        </div>
+        <div className="text-xs text-slate-400 mt-1">
+          {signType === 'word' ? 'Word Detection Mode' : 'Alphabet Detection Mode'}
+        </div>
       </div>
     )}
   </div>
@@ -78,11 +112,20 @@ const QuizCard = ({ word, isRecording, setIsRecording, prediction, setPrediction
         <span className="block text-3xl font-bold mt-2 text-purple-600 transition-all duration-1000">
           {word.sign_flashcards.sign_text}
         </span>
+        <span className="block text-sm text-slate-500 mt-1">
+          ({word.sign_flashcards.sign_type})
+        </span>
       </h2>
     </div>
 
     <div className="p-3 space-y-3">
-      <WebcamCard {...{ isRecording, setIsRecording, prediction, setPrediction }} />
+      <WebcamCard 
+        isRecording={isRecording}
+        setIsRecording={setIsRecording}
+        prediction={prediction}
+        setPrediction={setPrediction}
+        signType={word.sign_flashcards.sign_type}
+      />
       <div className="flex justify-between gap-2">
         <button
           id="finalRewardId"
@@ -193,7 +236,6 @@ const QuizScreen = () => {
     }
   }, [prediction]);
   
-
   useEffect(() => {
     if (score === totalWords.length - 1) {
       finalReward();
