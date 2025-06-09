@@ -132,7 +132,7 @@ const WordWebcamProcessor = ({displayPreds = true, setParentPrediction, isPracti
         <div className="space-y-2">
           <div className="text-base">
             Prediction:{' '}
-            <span className="text-green-600">{}</span>
+            <span className="text-green-600">{prediction.class}</span>
             , Confidence:{' '}
             <span className={prediction.confidence > 0.5 ? 'text-green-600' : 'text-red-600'}>
               {(prediction.confidence * 100).toFixed(2)}%
