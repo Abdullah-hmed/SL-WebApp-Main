@@ -122,5 +122,84 @@ router.post('/update_flashcards', async (req, res) => {
     }
 });
 
+// DataViz endpoints
+
+// Get Flashcards by Box Level and Status
+router.post('/flashcards_by_box_level', async (req, res) => {
+    const { userId } = req.body; // Assuming userId is passed in the request body
+
+    try {
+        if (!userId) {
+            return res.status(400).json({ error: 'userId is required' });
+        }
+
+        // Supabase RPC call to execute a custom SQL query
+        // The SQL query is defined within the .rpc function.
+        // It aggregates data from user_flashcards for the specified user_id.
+        const { data, error } = await supabase.rpc('get_flashcards_by_box_level', {
+            p_user_id: userId // Pass userId as a parameter to the RPC function
+        });
+
+        if (error) {
+            console.error('RPC Error (get_flashcards_by_box_level):', error);
+            return res.status(500).json({ error: error.message });
+        }
+
+        res.status(200).json(data);
+    } catch (err) {
+        console.error('Server Error (flashcards_by_box_level):', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get Daily Review Activity
+router.post('/daily_review_activity', async (req, res) => {
+    const { userId } = req.body; // Assuming userId is passed in the request body
+
+    try {
+        if (!userId) {
+            return res.status(400).json({ error: 'userId is required' });
+        }
+
+        const { data, error } = await supabase.rpc('get_daily_review_activity', {
+            p_user_id: userId
+        });
+
+        if (error) {
+            console.error('RPC Error (get_daily_review_activity):', error);
+            return res.status(500).json({ error: error.message });
+        }
+
+        res.status(200).json(data);
+    } catch (err) {
+        console.error('Server Error (daily_review_activity):', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get Upcoming Reviews
+router.post('/upcoming_reviews', async (req, res) => {
+    const { userId } = req.body; // Assuming userId is passed in the request body
+
+    try {
+        if (!userId) {
+            return res.status(400).json({ error: 'userId is required' });
+        }
+
+        const { data, error } = await supabase.rpc('get_upcoming_reviews', {
+            p_user_id: userId
+        });
+
+        if (error) {
+            console.error('RPC Error (get_upcoming_reviews):', error);
+            return res.status(500).json({ error: error.message });
+        }
+
+        res.status(200).json(data);
+    } catch (err) {
+        console.error('Server Error (upcoming_reviews):', err);
+        res.status(500).json({ error: err.message });
+    }
+});
 
 export default router;

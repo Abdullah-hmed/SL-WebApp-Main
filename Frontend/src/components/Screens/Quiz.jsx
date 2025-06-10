@@ -40,7 +40,7 @@ const updateFlashcard = async (signId, boxLevel, userId) => {
 /** Can't remember logic */
 const handleCantRemember = async ({ score, setScore, currentIndex, setCurrentIndex, totalWords }) => {
   const nextIndex = (currentIndex + 1) % totalWords.length;
-  setScore((score + 1) % totalWords.length);
+  // setScore((score + 1) % totalWords.length);
   setCurrentIndex(nextIndex);
   await updateFlashcard(totalWords[currentIndex].flashcard_id, 1, getUserData().id);
 };
