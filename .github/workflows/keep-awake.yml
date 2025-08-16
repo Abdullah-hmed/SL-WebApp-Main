@@ -1,9 +1,9 @@
-name: Keep Supabase Awake
+name: Keep Supabase Awake (Test)
 
 on:
   schedule:
-    # Runs twice a week: Monday & Thursday at 10:00 UTC
-    - cron: "0 10 * * 1,4"
+    # Every 10 minutes
+    - cron: "*/10 * * * *"
 
 jobs:
   ping:
